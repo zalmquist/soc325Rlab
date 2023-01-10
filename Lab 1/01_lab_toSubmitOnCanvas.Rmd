@@ -140,7 +140,7 @@ Reflect on your answer to 1.4. What might cause the results you got? How does th
 
 Set up your environment by: 
 
-Reading the Airbnb data: There's another new data set in the `data/` folder. This one has almost 10,000 cases and the census data by zipcode. These data are from New York City, not Seattle! 
+Reading the Airbnb data: There's another new data set in the `data/` folder. This one has almost 10,000 cases and the census data by zipcode. These data are from New York City, not Seattle! (`nyc_airbnb_census_data.csv`)
 
 ```{r}
 
