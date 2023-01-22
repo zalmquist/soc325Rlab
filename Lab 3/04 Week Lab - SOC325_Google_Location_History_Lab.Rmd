@@ -292,7 +292,10 @@ gta_st<-get_my_top_artists_or_tracks(type = 'artists', time_range = 'short_term'
 gta_lt<-get_my_top_artists_or_tracks(type = 'artists', time_range = 'long_term', limit = 5)
 gta_st_tracks<-get_my_top_artists_or_tracks(type = 'tracks', time_range = 'short_term', limit = 5)
 gta_lt_tracks<-get_my_top_artists_or_tracks(type = 'tracks', time_range = 'long_term', limit = 5)
-save(grp,gta_st,gta_lt,gta_st_tracks,gta_lt_tracks,file="data/spotify.Rda")
+
+ed <- spotifyr::get_artist_audio_features('ed sheeran')
+
+save(grp,gta_st,gta_lt,gta_st_tracks,gta_lt_tracks, ed,file="data/spotify.Rda")
 ```
 
 ```{r}
@@ -332,8 +335,6 @@ gta_st_tracks %>%
   mutate(artist.name = map_chr(artists, function(x) x$name[1])) %>% 
   select(name, artist.name, album.name) %>% 
   kable()
-
-ed <- spotifyr::get_artist_audio_features('ed sheeran')
 
 ed %>%arrange(-valence) %>% 
   select(track_name, valence) %>% 
