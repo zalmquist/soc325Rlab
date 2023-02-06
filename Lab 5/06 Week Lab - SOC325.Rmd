@@ -1,0 +1,414 @@
+---
+title: "SOC 325 Lab 5 - Analyzing Watch Data"
+subtitle: "Soc 325: Quantified-Self"
+author: "[PUT YOUR NAME HERE]"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    toc: true
+---
+
+# Preamble before starting the labs
+
+You'll download all R and RMarkdown files of the lab files for this class as `.zip` files from github as before. We will use library `googlesheets4` to access data for this lab. This will allow us to limit the data access to just UW or just this class as needed.
+
+# Pyschology of R, RStudio and Labs
+
+Scripting is HARD. That is ok, many hard things are useful! This is very helpful if you want to work as a data scientist. You need to familiarize yourself with the practices of coding and building analysis scripts.
+
+**Why**
+
+* Your work has to be reproducible 
+* Your work has to be able to hand off to someone else
+* You need to be able to do lots of different things
+
+**You Don't need to do everything from scratch!!**
+
+* It is ok to borrow code, use [stack overflow](https://stackoverflow.com/), [google](https://google.com), etc.
+* Use books like [R for Data Science](https://r4ds.had.co.nz/introduction.html).
+
+**Strategies for working in RMarkdown**
+
+* DO **NOT** code a bunch and then *knit* -- This will almost assuradely not work and crash!
+* Do make small changes and *knit*
+  + If you have a part that takes a long time (e.g. reading in data) turn `cache=TRUE` on in the R Chunk. This will pre-load it and make it faster.
+
+
+# Analysis of Sleep Watches
+
+## Load Libraries Needed For this Lab
+
+For library management we use use the library `pacman`. The key with pacman is it will install and load the packages if needed. This makes our life easier!
+
+The first line of code is `if (!require("pacman")) install.packages("pacman")` to install pacman if needed.
+
+The second line `pacman::p_load([PACKAGES HERE])` uses `pacman` to load and install all the packages for the lab.
+
+
+```{r,message=FALSE,warning=FALSE}
+## Run this code, to manage packages and install as needed.
+# Install pacman
+if (!require("pacman")) install.packages("pacman")
+# p_load function loads packages if installed, or install then loads otherwise
+pacman::p_load(tidyverse,haven,lubridate,ggthemes,kableExtra,here,ggpubr,rstatix,Routliers,reshape2,Routliers,gt,ggforce,car,data.table,zoom,magrittr,zoo,infer)
+```
+
+# Analyzing data from sleep watches
+
+## Violin Plots
+
+```{r,message=FALSE,warning=FALSE}
+df <- read.csv (here("data","IndividualSleepSummary.csv"))
+
+#Set year and subject id as factors
+df$year <- as.factor (df$year)
+df$subjectid <- as.factor(df$subjectid)
+
+
+####Violin plots (plots days separately) #########
+df$onset_mean <- df$onset_mean - 24
+
+#Clock time axis
+yaxis <- c("18", "20", "22", "00", "02", "04", "06", "08", "10", "12", "14", "16")
+yaxis <- str_pad(yaxis, 2, pad = "0")
+
+#Plot
+ggplot(df, aes(x = year, y = onset_mean)) + #Change y axis to whatever plotting (duration, onset, etc.)
+  geom_violin(aes(color = year), trim = FALSE, show.legend = F,
+              position = position_dodge(width = 0.3)) +
+  stat_summary(aes(x = year, y = onset_mean, color = year), fun = "mean", geom = "point",
+               size = 8, show.legend = F) + #Change y axis to whatever plotting (duration, onset, etc.)
+  geom_sina (aes(fill = subjectid, group = year),
+             show.legend = F, shape = 21,
+             size = 3.5, alpha = 0.3, maxwidth = .05, 
+             position = position_dodge(width = 0.5)) +
+  theme_classic () +
+  theme(axis.text.x = element_text(size = 25, color = "black"),
+        axis.text.y = element_text(size = 25, color = "black"),
+        axis.title.y = element_text(size = 25, color = "black", face = "bold" ),
+        legend.position = "none",
+        strip.text = element_text(size = 25),
+        plot.title = element_text(hjust = 0.5, size = 28, face = "bold")) +
+  scale_color_manual (values = c("#009E73", "#0072B2", "#D55E00")) + #Change colors to match other plots
+  labs(title = "Sleep Duration") +
+  ylab ("Clock Time") + #y-axis label, change for duration (Hours)
+  xlab ("") + #x-axis label
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
+  #Set y- axis breaks below to be the same as in y-axis vector
+  #will need to change for each parameter
+  #clock time hour labels not needed for duaration plot
+  scale_y_continuous(limits = c(-6, 16), breaks = seq (-6, 16, 2) , labels = yaxis) +
+  facet_wrap(~day)
+```
+
+## Waveform Plots
+
+```{r,message=FALSE,warning=FALSE}
+filenames <- list.files(path=here("data"),pattern = "\\.csv$") #Get .csv file names in directory
+filenames<-filenames[-1]
+
+
+#Combine data frame with all .csv files data
+df<- lapply(here("data/",filenames), fread) %>% 
+  set_names(filenames) %>% 
+  rbindlist(idcol = "subjectid") #set column with identifier (subject id)
+
+df$subjectid <- substr(df$subjectid,8,9) #make subjectid column into correct number
+
+#Set subject ID as correct year
+#If error "column 1 of item 22 does not match with column 1 of item 1"
+#Go into file (in excel) named and format data the same as other files
+df <- df %>% mutate(year =
+                      case_when(subjectid <= 10 ~ "2019", 
+                                subjectid >=25 & subjectid <=49 ~ "2020",
+                                subjectid >= 50 ~ "2021"))
+
+#make subject, year, and day a factor
+df$subjectid <- as.factor (df$subjectid)
+df$day <- as.factor (df$day)
+df$year <- as.factor(df$year)
+
+#Make time into date/time format
+df$Time <- as.POSIXct(df$Time, format="%H:%M:%S", tz = "America/Los_Angeles" )
+df$Time <- strftime(df$Time, format="%H:%M")
+
+#Alter data for running average #####
+
+#Log of data (activity and light) + 1 - to not have N/A for zeros (for every individual file)
+df$White.Light <- log(df$White.Light+1)
+
+#rolling average for activity in light added to columns (grouped by subject)
+df <- df %>%
+  group_by(subjectid) %>%
+  dplyr::mutate(meanactivity = rollmean(Activity, k = 6, fill = NA),
+                loglight = rollmean(White.Light , k = 6, fill = NA))
+
+#Mean for each time point seperated by subject (one point for each subject at each timepoint) ####
+activity <- df %>%
+  group_by(subjectid, Time, day, year) %>%
+  dplyr::summarize(activity = mean(meanactivity, na.rm=TRUE)) #School day activity
+
+light <- df %>%
+  group_by(subjectid, Time, day, year) %>%
+  dplyr::summarize(light = mean(loglight, na.rm=TRUE)) #weekend activity
+
+#Mean for each timepoint seperated by day (one point per timepoint) ####
+#Change time to a factor
+activity$Time <- as.factor(activity$Time)
+light$Time <- as.factor(light$Time)
+
+#Change format of dataframe for saving file ####
+
+activity_file <- activity %>%
+  pivot_wider(names_from = subjectid, values_from = activity)
+
+light_file <- light %>%
+  pivot_wider(names_from = subjectid, values_from = light)
+
+
+#Summarize activity data
+activityplot <- activity %>%
+  group_by(Time, year, day) %>%
+  get_summary_stats(activity, type = "mean_se")
+
+#summarize light data
+lightplot <- light %>%
+  group_by(Time, year, day) %>%
+  get_summary_stats(light, type = "mean_se")
+
+#Alter data for plotting #####
+#Change Time column factor levels, so graph is plotted 16:00pm - 15:50pm
+#Using row numnbers
+activityplot$Time <- factor(activityplot$Time, levels(activityplot$Time)[c(97:144,1:96)])
+lightplot$Time <- factor(lightplot$Time, levels(lightplot$Time)[c(97:144,1:96)])
+
+level <- as.data.frame(levels (lightplot$Time)) #check that levels are correct
+
+#Make waveform plot for DAY comparisons (School day v. weekend) ####
+#Create wave forms
+lightplot %>% #set correct data (light or activity)
+  filter(year == "2019") %>% #filter for year
+  ggplot(aes(x = Time, y = mean, group = day)) +
+  geom_line(aes(color = day), lwd = 1) + #Add line
+  geom_pointrange(aes(ymin=mean-se, ymax=mean+se, color = day), size = 0.5) +
+  theme_classic() +
+  xlab("Clock Time") +
+  ylab("Illuminance (log [lux])") + #Axis title set for illuminance or activity
+  ylim (0,4) + #y axis scale
+  theme(axis.text.x = element_text(angle = 50, hjust = 1), 
+        legend.title = element_blank(), legend.position=c(.88, .3), #remove legend title & adjust position on graph
+        legend.text=element_text(size=18), #legend text size
+        axis.text=element_text(size=18, color = "black"),
+        axis.title=element_text(size=18,face="bold", color = "black"),
+        #legend.position="none",
+        strip.text = element_text(size = 18),
+        plot.title = element_text(hjust = 0.5, size = 22, face = "bold")) +
+  scale_color_manual(values=c("#E69F00", "#56B4E9")) + #colors for School day vs weekend
+  labs (title = "2019") +
+  scale_x_discrete(breaks = levels(activityplot$Time)[c(T, rep(F, 5))]) #X axis
+
+
+#Make waveform plot for year comparisons (2019 v. 2020 v. 2021) ####
+lightplot %>% #set correct data (light or activity)
+  filter(day == "Weekday") %>% #filter for day (school day or weekend)
+  ggplot(aes(x = Time, y = mean, group = year)) +
+  geom_line(aes(color = year), lwd = 2) + #Add line
+  geom_pointrange(aes(ymin=mean-se, ymax=mean+se, color = year), size = 0.5) +
+  theme_classic() +
+  scale_x_discrete(breaks = levels(lightplot$Time)[c(T, rep(F, 5))]) + #X axis
+  xlab("Clock Time") +
+  ylab("Illuminance (log[lux])") + #Axis set for illuminance or activity
+  ylim (0,4) +
+  labs (title = "Weekday") +
+  theme(axis.text.x = element_text(angle = 50, hjust = 1), 
+        legend.title = element_blank(), legend.position=c(.88, .3), #remove legend title & adjust position on graph
+        legend.text=element_text(size=23), #legend text size
+        axis.text=element_text(size=21, color = "black"),
+        axis.title=element_text(size=21,face="bold", color = "black"),
+        plot.title = element_text(hjust = 0.5, size = 22, face = "bold"),
+        #legend.position = "none"
+        ) +
+  scale_colour_manual(labels=c("2019", "2020", "2021"), 
+                      values=c("#009E73", "#0072B2", "#D55E00")) #color for years
+
+```
+
+# Assignment
+
+For this lab we are going to analyze sleep data from a Fitbit tracker from Kaggle - [data](https://www.kaggle.com/datasets/riinuanslan/sleep-data-from-fitbit-tracker).
+
+We can load this data directly,
+
+```{r}
+November_sleep<- read_csv(here("fitbit_data","November sleep data - Sheet1.csv"))%>%na.omit()
+December_sleep<- read_csv(here("fitbit_data","December sleep data - Sheet1.csv"))%>%na.omit()
+January_sleep<- read_csv(here("fitbit_data","January sleep data - Sheet1.csv"))%>%na.omit()
+February_sleep<- read_csv(here("fitbit_data","February sleep data - Sheet1 (1).csv"))%>%na.omit()
+March_sleep<- read_csv(here("fitbit_data","March sleep data - Sheet1.csv"))%>%na.omit()
+April_sleep<- read_csv(here("fitbit_data","April sleep data - Sheet1.csv"))%>%na.omit()
+
+```
+
+### Example analysis
+
+Let's look at November
+
+
+**Step 1** 
+
+Clean data
+
+```{r}
+## Clean up the data
+nov_clean<-November_sleep%>%mutate(
+    st = str_split(`SLEEP TIME`," - ",simplify=TRUE)[, 1],
+    wt= str_split(`SLEEP TIME`," - ",simplify=TRUE)[, 2],
+    sd=if_else(str_detect(st,"am"),as.Date(DATE,"%m/%d/%Y")+1,as.Date(DATE,"%m/%d/%Y")),
+    sleep_time = as.POSIXct(paste(sd,
+            st),
+            format='%Y-%m-%d %I:%M %p'),
+    wd=if_else(str_detect(wt,"am"),as.Date(DATE,"%m/%d/%Y")+1,as.Date(DATE,"%m/%d/%Y")),
+    wake_time = as.POSIXct(paste(wd,
+            wt),
+            format='%Y-%m-%d %I:%M %p'),
+    time_slept_min= difftime(wake_time,sleep_time,units="mins"),
+    time_slept_hour= difftime(wake_time,sleep_time,units="hour")
+)
+```
+
+**Step 1.5: Print out Data**
+
+```{r}
+nov_clean%>%kbl(digits = 2) %>%
+  kable_styling()%>%
+   kable_paper("hover", full_width = F)
+```
+
+**Step 2: Plot data**
+
+```{r}
+## Check histogram of the data
+nov_clean%>%
+  ggplot(aes(x=as.numeric(time_slept_hour)))+
+  geom_histogram()+
+  theme_bw()
+
+## Check Scatter plot
+nov_clean%>%
+  ggplot(aes(y=as.numeric(time_slept_hour),x=`SLEEP SCORE`,color=as.factor(NOVEMBER)))+
+  geom_point()+
+  theme_bw()
+
+## Check linear relationship between time slept and sleep scor
+nov_clean%>%
+  ggplot(aes(y=as.numeric(time_slept_hour),x=`SLEEP SCORE`))+
+  geom_point()+
+  geom_smooth(method="lm",formula='y ~ x')+
+  theme_bw()
+
+## Check linear relationship between time slept and sleep score
+## Log-Log plot
+
+nov_clean%>%
+  ggplot(aes(y=as.numeric(time_slept_hour),x=`SLEEP SCORE`))+
+  geom_point()+
+  scale_y_log10()+
+  scale_x_log10()+
+  geom_smooth(method="lm",formula='y ~ x')+
+  theme_bw()
+```
+
+**Step 3: Explore the data**
+
+```{r}
+## Check that it makes sense
+
+## Check Correlations between Sleep Score and Hourse Slept
+nov_clean%>%summarise(cor=cor(`SLEEP SCORE`,as.numeric(time_slept_hour),use="na.or.complete"))
+
+## Check the linear relationship between Day of the week and 
+#### sleep score
+summary(lm(`SLEEP SCORE`~as.character(NOVEMBER)-1,data=nov_clean))
+
+## Check the linear relationship between Day of the week and 
+#### hours slept
+summary(lm(as.numeric(time_slept_hour)~as.character(NOVEMBER)-1,data=nov_clean))
+```
+
+
+## Question 1
+
+In this question we will look at December and January Sleep
+
+### Questions 1.1
+
+Combine December and January data using the tidyverse method `OBJECT1 %>% bind_cols(OBJECT2)`. Save this object as `dec_jan`.
+
+<span style="color: red;">YOUR SOLUTION HERE</span>
+
+```{r}
+## Your code here
+```
+
+<span style="color: red;">END OF YOUR SOLUTION HERE</span>
+
+### Questions 1.2
+
+Repeat the cleaning steps used in NOVEMBER, but adapt them for your `dec_jan` object.
+
+<span style="color: red;">YOUR SOLUTION HERE</span>
+
+```{r}
+## Your code here
+```
+
+<span style="color: red;">END OF YOUR SOLUTION HERE</span>
+
+### Questions 1.3
+
+Print out out the `dec_jan` object using the `kbl()` function.
+
+<span style="color: red;">YOUR SOLUTION HERE</span>
+
+```{r}
+## Your code here
+```
+
+<span style="color: red;">END OF YOUR SOLUTION HERE</span>
+
+
+### Questions 1.4
+
+Plot the `dec_jan` object similar to example analysis on NOVEMBER.
+
+<span style="color: red;">YOUR SOLUTION HERE</span>
+
+```{r}
+## Your code here
+```
+
+<span style="color: red;">END OF YOUR SOLUTION HERE</span>
+
+### Questions 1.4
+
+Perform the exploratory analysis on `dec_jan` object similar to example analysis on NOVEMBER.
+
+<span style="color: red;">YOUR SOLUTION HERE</span>
+
+```{r}
+## Your code here
+```
+
+<span style="color: red;">END OF YOUR SOLUTION HERE</span>
+
+
+### Questions 1.5
+
+Interpret your plots and analysis here:
+
+<span style="color: red;">YOUR SOLUTION HERE</span>
+
+
+
+<span style="color: red;">END OF YOUR SOLUTION HERE</span>
+
