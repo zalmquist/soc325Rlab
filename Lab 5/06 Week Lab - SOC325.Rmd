@@ -55,6 +55,14 @@ pacman::p_load(tidyverse,haven,lubridate,ggthemes,kableExtra,here,ggpubr,rstatix
 
 # Analyzing data from sleep watches
 
+This is the data from 
+
+* Dunster, Gideon P., Isabelle Hua, Alex Grahe, Jason G. Fleischer, Satchidananda Panda, Kenneth P. Wright Jr, Céline Vetter, Jennifer H. Doherty, and Horacio O. de la Iglesia. "Daytime light exposure is a strong predictor of seasonal variation in sleep and circadian timing of university students." Journal of Pineal Research (2022): e12843
+
+The article is part of our weekly reading and available [here](https://drive.google.com/file/d/1RM2rgl2n8cyv77_BdoQAbycW7TWAMCx4/view?usp=share_link). *I highly recommened reading it!*
+
+We will look at daily and weekend/weekday variation:
+
 ## Violin Plots
 
 ```{r,message=FALSE,warning=FALSE}
