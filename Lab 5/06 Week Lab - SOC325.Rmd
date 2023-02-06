@@ -350,7 +350,28 @@ In this question we will look at December and January Sleep
 
 ### Questions 1.1
 
-Combine December and January data using the tidyverse method `OBJECT1 %>% bind_cols(OBJECT2)`. Save this object as `dec_jan`.
+Combine December and January data using the tidyverse method `OBJECT1 %>% bind_rows(OBJECT2)`. Save this object as `dec_jan`.
+
+**Hint From Lecture**
+
+
+```
+## Rename DECEMBER/JANUARY Column
+December_sleep<-December_sleep%>%rename(DayOfTheWeek=DECEMBER)
+## Add Flag for month
+December_sleep<-December_sleep%>%mutate(
+  Month="December"
+)
+
+## Do same for Januyar
+January_sleep<-January_sleep%>%rename(DayOfTheWeek=JANUARY)
+January_sleep<-January_sleep%>%mutate(
+  Month="January"
+)
+
+## Combine
+dec_jan<-December_sleep%>%bind_rows(January_sleep)
+```
 
 <span style="color: red;">YOUR SOLUTION HERE</span>
 
