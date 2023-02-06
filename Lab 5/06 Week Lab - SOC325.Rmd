@@ -248,8 +248,8 @@ For this lab we are going to analyze sleep data from a Fitbit tracker from Kaggl
 We can load this data directly,
 
 ```{r}
-November_sleep<- read_csv(here("fitbit_data","November sleep data - Sheet1.csv"))%>%na.omit()
-December_sleep<- read_csv(here("fitbit_data","December sleep data - Sheet1.csv"))%>%na.omit()
+November_sleep<- read_csv(here("fitbit_data","November Sleep Data - Sheet1.csv"))%>%na.omit()
+December_sleep<- read_csv(here("fitbit_data","December Sleep data - Sheet1.csv"))%>%na.omit()
 January_sleep<- read_csv(here("fitbit_data","January sleep data - Sheet1.csv"))%>%na.omit()
 February_sleep<- read_csv(here("fitbit_data","February sleep data - Sheet1 (1).csv"))%>%na.omit()
 March_sleep<- read_csv(here("fitbit_data","March sleep data - Sheet1.csv"))%>%na.omit()
