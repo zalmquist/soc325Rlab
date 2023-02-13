@@ -45,7 +45,7 @@ See [RedditExtractorR](https://github.com/ivan-rivera/RedditExtractor) for more 
 # Install pacman
 if (!require("pacman")) install.packages("pacman")
 # p_load function loads packages if installed, or install then loads otherwise
-pacman::p_load(tidyverse,rvest,RedditExtractoR,stm,wordcloud)
+pacman::p_load(tidyverse,rvest,RedditExtractoR,stm,wordcloud,tm)
 
 theme_set(theme_minimal())
 options(scipen = 999)
@@ -206,7 +206,7 @@ cloud(stm10, topic = 10)
 
 ## Question 1
 
-Finds another subreddit (i.e. besides `QuantifiedSelf`) and redo the above analysis. Ideaaly on a group focused on quantified-self or other self tracking activities.
+Finds another subreddit (i.e. besides `QuantifiedSelf`) and redo the above analysis. Ideally on a group focused on quantified-self or other self tracking activities.
 
 <span style="color: red;">YOUR SOLUTION HERE</span>
 
