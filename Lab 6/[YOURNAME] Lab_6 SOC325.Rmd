@@ -1,0 +1,218 @@
+---
+title: "SOC 325 Lab 6 - Collecting Internet Data & Topic Modelling"
+subtitle: "Soc 325: Quantified-Self"
+author: "[PUT YOUR NAME HERE]"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    toc: true
+---
+
+# Preamble before starting the labs
+
+In this tutorial we are going to collect data from a subreddit called **QuantifiedSelf** and run a basic topic model which is a type of unsupervised text analysis method. We learn two main concepts throughout the way:
+
+1. Collecting Internet Data
+2. Text Analysis with Topic Modeling
+
+
+# Collecting Internet Data
+
+The architecture of the Internet shapes the ways we can collect data from it. We'll introduce you to two ways of getting data from the Internet: 
+
+1. Web scraping
+2. Application Programming Interfaces (APIs)
+
+Web scraping is made possible by the front-end structure of a web page---the HTML and CSS that make up most of what you see on the Internet. 
+
+Web APIs are structured ways of making web requests. This is how websites communicate with databases and with each other; most data is transmitted over the Internet in this way.
+
+## Setup
+
+To collect Internet data, we'll use two new packages. `rvest` is for web scraping, and `RedditExtractoR` is for using Reddit API and `stm` for topic modeling. We will also load our famous package `tidyverse` for easier data handling. 
+
+*Run this in the console first, befor pacman!!*
+
+```
+devtools::install_version("RedditExtractoR", version = "2.1.5", repos = "http://cran.us.r-project.org")
+```
+
+See [RedditExtractorR](https://github.com/ivan-rivera/RedditExtractor) for more information.
+
+
+```{r,message=FALSE,warning=FALSE}
+## Run this code, to manage packages and install as needed.
+# Install pacman
+if (!require("pacman")) install.packages("pacman")
+# p_load function loads packages if installed, or install then loads otherwise
+pacman::p_load(tidyverse,rvest,RedditExtractoR,stm,wordcloud)
+
+theme_set(theme_minimal())
+options(scipen = 999)
+knitr::opts_chunk$set(error = TRUE)
+```
+
+
+## Web scraping
+
+This example is based on a tutorial by Chris Bail, a sociology professor at Duke University: https://cbail.github.io/SICSS_Screenscraping_in_R.html
+
+We'll extract a table from this Wikipedia page: https://en.wikipedia.org/wiki/World_Health_Organization_ranking_of_health_systems_in_2000 
+
+First, have a look at the page in a web browser. Then right click and hit "inspect" to look at the underlying HTML. 
+
+As you probably realize, web pages are giant text files containing HTML and CSS scripts (a.k.a source code) and our browsers (like Chrome) are rendering those scripts and presenting the website we engage as a user. Our job in web scraping is working through the source code and extract information using HTML's "tree-like" structure. Fortunately, `rvest` package makes is very easy to scrape the source code. You can find more information on this in Chris Bail's tutorial. 
+
+
+Now, read the page into R using `read_html`. Inspect the results in the console.
+
+```{r,warning=FALSE,message=FALSE}
+wikipedia_page <- 
+  read_html("https://en.wikipedia.org/wiki/World_Health_Organization_ranking_of_health_systems_in_2000")
+
+wikipedia_page
+```
+
+There are two ways of identifying and selecting segment of html: CSS selectors and XPath. Right click when you're inspecting a node in Chrome to copy one of these. If one doesn't work, you can try the other.
+
+```{r,warning=FALSE,message=FALSE}
+# CSS selector
+section <- html_node(wikipedia_page, 
+                     css = "#mw-content-text > div > table.wikitable")
+
+# XPath
+# section <- html_node(wikipedia_page, xpath = '//*[@id="mw-content-text"]/div/table')
+
+section
+```
+
+```{r,warning=FALSE,message=FALSE}
+health_rankings <- html_table(section, fill = T)
+health_rankings <- as_tibble(health_rankings, .name_repair = "unique")
+health_rankings
+```
+
+Great! We have successfully loaded the Wikipedia table into a tidy data_frame. 
+
+## Application Programming Interface (API)
+
+
+### What is an API?
+
+APIs are tools for building apps or other forms of software that help people access certain parts of large databases. Software developers can combine these tools in various ways—or combine them with tools from other APIs ---in order to generate even more useful tools. Most of us use such apps each day. For example, if you install the Spotify app within your Facebook page to share music with your friends, this app is extracting data from Spotify’s API and then posting it to your Facebook page by communicating with Facebook’s API. 
+
+There are many APIs available: Twitter, Census, Google Translate etc. Luckily, many R wrappers of APIs available as R packages. For instance, `tidycensus` is an R package that allows users to interface with the US Census Bureau’s decennial Census and five-year American Community APIs and return tidyverse-ready data frames. There is also generic method for to communicate with APIs, called HTTP which can be used via `httr` package. Connor Gilroy, graduate student at UW, has a great tutorial on HTTP and APIs: https://github.com/ccgilroy/retrieving-data-through-apis
+
+### Reddit API 
+
+For this task, we will use `RedditExtractoR` an R wrapper for Reddit API. This package makes it very easy to extract  data from Reddit and construct tidy data_frames.
+ 
+We will download the threads inside *Quantified Self* subreddit. We will run this query for 500 pages.
+
+```{r,cache=TRUE,warning=FALSE,message=FALSE}
+reddit_df = get_reddit(subreddit = "QuantifiedSelf", page_threshold = 100)
+```
+
+Let's look at our data:
+
+```{r,warning=FALSE,message=FALSE}
+glimpse(reddit_df)
+```
+
+As seen above, `get_reddit` function provided a data_frame with comments and relevant metadata. We can use the metadate to look at the relationship between our users. For instance, we can look at the top 20 authors with most comments.
+
+```{r,warning=FALSE,message=FALSE}
+top_authors = 
+  reddit_df %>% 
+  distinct(author, .keep_all = TRUE) %>% 
+  mutate(author = fct_reorder(author, num_comments)) %>%
+  arrange(desc(num_comments)) %>% 
+  head(20) 
+
+top_authors %>%
+  ggplot(aes(x=num_comments, y=author)) + 
+  geom_col()
+```
+
+# Topic Modeling
+
+Topic modeling is part of a class of text analysis methods that analyze “bags” or groups of words together ---instead of counting them individually–in order to capture how the meaning of words is dependent upon the broader context in which they are used in natural language.
+
+There are many uses cases of topic modeling in social science research. I suggest checking Chris Bail's tutorial and discussion on topic modelling: https://cbail.github.io/SICSS_Topic_Modeling.html
+
+## Structural Topic Modeling (STM)
+
+This package implements the Structural Topic Model, a general approach to including document-level metadata within mixed-membership topic models. To read the vignette use `vignette ('stmVignette')`. ` 
+
+`stm` package has a lot of features and technical details that we will not cover in this tutorial. I deliberately choice `stm` because it is a complete package meaning that it takes raw text, processes and prepare for statistical analysis. To be more specific, within the `stm` package one can: 
+
+- preprocessing the raw text: 
+  + tokenizing (splitting into words)
+  + transform into lowercase letters
+  + remove stopwords (such as: then, and, the, is, are)
+  + remove numbers 
+  + remove punctuation
+  + stemming (reduce words into their root form)
+  
+- estimate topic models: 
+  + searching for optimum number of topics
+  + comparing different models
+  + exploring topic-metadata relationships
+  
+- visualization: 
+  + summarizing topics 
+  + creating Word Clouds 
+  + representing the most relevant texts
+  
+
+### Text Preprocessing
+
+`textProcessor` function takes raw documents and apply the preprocessing steps above. We set stemming to FALSE because research shows that stemming words when topic modeling often does more harm than good. That being said, there are times stemming is absolutely necessary too. It is better to try both and evaluate by yourself.
+
+```{r,warning=FALSE,message=FALSE}
+processed <- textProcessor(documents = reddit_df$comment,  stem = FALSE)
+```
+
+`prepDocuments` takes processed documents and the extracted words (vocab), then transform into a bag-of-words matrix in which each document is represented with the count of words it includes.
+
+```{r,warning=FALSE,message=FALSE}
+out <- prepDocuments(documents = processed$documents, vocab = processed$vocab)
+```
+
+### Running the STM model
+
+`stm` function has a lot parameters that worth looking for. For our tutorial, we will run the simplest topic models with 5 and 10 topics. In topic models the number of topics (K) is decided by the user and there are no perfect method to choose the best K. `searchK` function provide a good starting point but eventually choosing the best K is an iterative process between close-reading of most representative documents and trying different values of K. 
+
+```{r,cache=TRUE}
+stm5 <-  stm(documents = out$documents, vocab = out$vocab, K = 5, verbose = FALSE)
+stm10 <- stm(documents = out$documents, vocab = out$vocab, K = 10, verbose = FALSE)
+```
+
+
+### Visualizing our results
+
+By default `plot.STM` creates summary plots of the given topic model. On the left we see the prevalence of topics across entire documents and on the right we see the most representative words of a given topic.  
+
+```{r,warning=FALSE,message=FALSE}
+par(mfrow=c(1,2))
+plot(stm5, n=7, text.cex = 0.7)
+plot(stm10, n = 7, text.cex = 0.7)
+```
+It seems like our 10-topic model did a better job of distinguishing topics than 5-topic model. Let's investigate the topic 10 (the most common topic) using word clouds.
+
+```{r,warning=FALSE,message=FALSE}
+cloud(stm10, topic = 10)
+```
+
+## Question 1
+
+Finds another subreddit (i.e. besides `QuantifiedSelf`) and redo the above analysis. Ideaaly on a group focused on quantified-self or other self tracking activities.
+
+<span style="color: red;">YOUR SOLUTION HERE</span>
+
+```{r}
+## your R code here
+```
+
+<span style="color: red;">END OF YOUR SOLUTION HERE</span>
+
