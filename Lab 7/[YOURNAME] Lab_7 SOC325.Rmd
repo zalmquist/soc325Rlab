@@ -136,7 +136,7 @@ race_vars_tbl = vars %>%
 race_totals = race_vars_tbl$name
 names(race_totals) = str_c(race_vars_tbl$label, race_vars_tbl$concept, sep = "_")
 
-race_vars_tbl%>%kableExtra::kble()
+race_vars_tbl%>%kableExtra::kbl()
 ```
 
 We have stored the names and labels of the variables into vector, called `totals`. Later, we will use it inside the `get_decennial()`.  

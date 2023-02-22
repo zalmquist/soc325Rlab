@@ -1108,8 +1108,114 @@ race_vars_tbl = vars %&gt;%
 race_totals = race_vars_tbl$name
 names(race_totals) = str_c(race_vars_tbl$label, race_vars_tbl$concept, sep = &quot;_&quot;)
 
-race_vars_tbl%&gt;%kableExtra::kble()</code></pre>
-<pre><code>## Error: &#39;kble&#39; is not an exported object from &#39;namespace:kableExtra&#39;</code></pre>
+race_vars_tbl%&gt;%kableExtra::kbl()</code></pre>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+name
+</th>
+<th style="text-align:left;">
+label
+</th>
+<th style="text-align:left;">
+concept
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+P1_001N
+</td>
+<td style="text-align:left;">
+!!Total:
+</td>
+<td style="text-align:left;">
+RACE
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+P1_002N
+</td>
+<td style="text-align:left;">
+!!Total:!!Population of one race:
+</td>
+<td style="text-align:left;">
+RACE
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+P2_001N
+</td>
+<td style="text-align:left;">
+!!Total:
+</td>
+<td style="text-align:left;">
+HISPANIC OR LATINO, AND NOT HISPANIC OR LATINO BY RACE
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+P2_002N
+</td>
+<td style="text-align:left;">
+!!Total:!!Hispanic or Latino
+</td>
+<td style="text-align:left;">
+HISPANIC OR LATINO, AND NOT HISPANIC OR LATINO BY RACE
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+P3_001N
+</td>
+<td style="text-align:left;">
+!!Total:
+</td>
+<td style="text-align:left;">
+RACE FOR THE POPULATION 18 YEARS AND OVER
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+P3_002N
+</td>
+<td style="text-align:left;">
+!!Total:!!Population of one race:
+</td>
+<td style="text-align:left;">
+RACE FOR THE POPULATION 18 YEARS AND OVER
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+P4_001N
+</td>
+<td style="text-align:left;">
+!!Total:
+</td>
+<td style="text-align:left;">
+HISPANIC OR LATINO, AND NOT HISPANIC OR LATINO BY RACE FOR THE
+POPULATION 18 YEARS AND OVER
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+P4_002N
+</td>
+<td style="text-align:left;">
+!!Total:!!Hispanic or Latino
+</td>
+<td style="text-align:left;">
+HISPANIC OR LATINO, AND NOT HISPANIC OR LATINO BY RACE FOR THE
+POPULATION 18 YEARS AND OVER
+</td>
+</tr>
+</tbody>
+</table>
 <p>We have stored the names and labels of the variables into vector,
 called <code>totals</code>. Later, we will use it inside the
 <code>get_decennial()</code>.</p>
@@ -2968,13 +3074,9 @@ obtained from the Census API.</p>
   |                                                                            
   |                                                                      |   0%
   |                                                                            
-  |                                                                      |   1%
-  |                                                                            
   |=                                                                     |   1%
   |                                                                            
   |=                                                                     |   2%
-  |                                                                            
-  |==                                                                    |   2%
   |                                                                            
   |==                                                                    |   3%
   |                                                                            
@@ -2982,77 +3084,77 @@ obtained from the Census API.</p>
   |                                                                            
   |===                                                                   |   5%
   |                                                                            
-  |====                                                                  |   5%
-  |                                                                            
-  |====                                                                  |   6%
-  |                                                                            
   |=====                                                                 |   7%
   |                                                                            
-  |=====                                                                 |   8%
-  |                                                                            
-  |======                                                                |   8%
-  |                                                                            
   |======                                                                |   9%
-  |                                                                            
-  |=======                                                               |  10%
   |                                                                            
   |========                                                              |  11%
   |                                                                            
   |==========                                                            |  14%
   |                                                                            
-  |==========                                                            |  15%
-  |                                                                            
   |===========                                                           |  16%
   |                                                                            
-  |============                                                          |  18%
+  |=============                                                         |  19%
   |                                                                            
-  |=============                                                         |  18%
-  |                                                                            
-  |==============                                                        |  20%
-  |                                                                            
-  |==============                                                        |  21%
+  |===============                                                       |  21%
   |                                                                            
   |================                                                      |  23%
   |                                                                            
-  |=================                                                     |  24%
+  |===================                                                   |  28%
   |                                                                            
-  |==================                                                    |  26%
-  |                                                                            
-  |===================                                                   |  27%
-  |                                                                            
-  |====================                                                  |  29%
-  |                                                                            
-  |=====================                                                 |  31%
+  |======================                                                |  31%
   |                                                                            
   |======================                                                |  32%
   |                                                                            
-  |=======================                                               |  33%
-  |                                                                            
-  |=========================                                             |  36%
-  |                                                                            
-  |===========================                                           |  38%
+  |=========================                                             |  35%
   |                                                                            
   |============================                                          |  40%
   |                                                                            
-  |============================                                          |  41%
-  |                                                                            
-  |==============================                                        |  43%
+  |=============================                                         |  41%
   |                                                                            
   |===============================                                       |  44%
   |                                                                            
-  |================================                                      |  46%
+  |=================================                                     |  47%
   |                                                                            
-  |==================================                                    |  48%
+  |====================================                                  |  52%
   |                                                                            
-  |===================================                                   |  49%
-  |                                                                            
-  |======================================                                |  55%
-  |                                                                            
-  |=======================================                               |  56%
+  |======================================                                |  54%
   |                                                                            
   |========================================                              |  57%
   |                                                                            
+  |==========================================                            |  60%
+  |                                                                            
+  |===========================================                           |  62%
+  |                                                                            
+  |==============================================                        |  66%
+  |                                                                            
+  |================================================                      |  69%
+  |                                                                            
+  |=================================================                     |  71%
+  |                                                                            
+  |==================================================                    |  71%
+  |                                                                            
+  |====================================================                  |  74%
+  |                                                                            
+  |=====================================================                 |  76%
+  |                                                                            
+  |======================================================                |  77%
+  |                                                                            
   |========================================================              |  80%
+  |                                                                            
+  |=========================================================             |  82%
+  |                                                                            
+  |===========================================================           |  85%
+  |                                                                            
+  |============================================================          |  86%
+  |                                                                            
+  |==============================================================        |  89%
+  |                                                                            
+  |===============================================================       |  91%
+  |                                                                            
+  |==================================================================    |  94%
+  |                                                                            
+  |===================================================================== |  99%
   |                                                                            
   |======================================================================| 100%</code></pre>
 <pre class="r"><code>head(king)</code></pre>
