@@ -20,7 +20,7 @@ output:
 # Install pacman
 if (!require("pacman")) install.packages("pacman")
 # p_load function loads packages if installed, or install then loads otherwise
-pacman::p_load(tidyverse,tidycensus,tigris,here)
+pacman::p_load(tidyverse,tidycensus,tigris,here,kableExtra)
 
 theme_set(theme_minimal())
 options(scipen = 999)
@@ -88,7 +88,7 @@ US_pop <- tidycensus::get_decennial(geography = "state",
                        variables = "P001001", 
                        year = 2010)
 
-head(US_pop, 10) %>% table_out()
+head(US_pop, 10) %>% kbl()
 ```
 
 By default, get_decennial() uses the argument `sumfile = "sf1"` which fetches data from the decennial Census Summary File 1. This summary file exists for the 2000 and 2010 decennial US Censuses, and includes core demographic characteristics for Census geographies. There are other summary files designed for various purposes. You can check which summary file exists for which census on [CSSCR.](https://depts.washington.edu/csscr/census/)
@@ -105,7 +105,7 @@ WA_pop = get_decennial(
   variables = "P1_001N", 
   sumfile = "pl")
 
-head(WA_pop, 10) %>% table_out()
+head(WA_pop, 10) %>% kbl()
 ```
 
 The function returns a tibble with four columns by default:  
@@ -136,7 +136,7 @@ race_vars_tbl = vars %>%
 race_totals = race_vars_tbl$name
 names(race_totals) = str_c(race_vars_tbl$label, race_vars_tbl$concept, sep = "_")
 
-table_out(race_vars_tbl)
+race_vars_tbl%>%kableExtra::kble()
 ```
 
 We have stored the names and labels of the variables into vector, called `totals`. Later, we will use it inside the `get_decennial()`.  
@@ -192,7 +192,7 @@ king_race = get_decennial(
 king_race %>% 
   mutate(percent = round(100 * (value / summary_value)),1) %>%
   select(variable, value, percent) %>% 
-  table_out()
+  kbl()
 ```
 
 
@@ -234,7 +234,7 @@ WA_race =  WA_raw %>%
   select(county, race, pop, total_pop, percent)
 
 
-head(WA_race, 10) %>% table_out()
+head(WA_race, 10) %>% kbl()
 
 ```
 By default tidycensus creates a tidy data.frame, each row represents county-characteristic combinations. Alternatively, we can create a table of variables spread across the columns by the setting `output = "wide"`. Here is the same data in a wide form:
@@ -249,7 +249,7 @@ WA_wide = get_decennial(
   sumfile = "pl", 
   output = "wide")
 
-head(WA_wide, 10) %>% table_out()
+head(WA_wide, 10) %>% kbl()
 
 ```
 
@@ -262,7 +262,7 @@ WA_race %>%
   summarise(percantage = max(percent)) %>%
   arrange(-percantage) %>% 
   head(20) %>%
-  table_out()
+  kbl()
 ```
 
 
@@ -295,7 +295,7 @@ yakima_pop <- get_estimates(geography = "county",
                         state = "WA",
                         county = "Yakima")
 
-head(yakima_pop,20) %>% table_out()
+head(yakima_pop,20) %>% kbl()
 ```
 
 With some additional data wrangling, the returned format facilitates analysis and visualization.   For example, we can compare population pyramids for Hispanic and non-Hispanic populations in WA:  
