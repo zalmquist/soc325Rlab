@@ -405,13 +405,13 @@ Also, TIGER/Line shapefiles spit out something like on the left, whereas we prob
 
 To return to our geometry focus: As the dataset is in a tidy format, it can be quickly visualized with the `geom_sf` functionality currently in the development version of __ggplot2__: 
 
-```{r}
+```{r,warning=FALSE,message=FALSE}
 king %>%
   ggplot(aes(fill = estimate)) + #the fill is the variable you wish to map
   geom_sf(color = NA) +  #develop some intuition: you should test out what happens when you don't set color=NA
   scale_fill_viridis_c(option = "magma") #the viridis package is a great option for mapping continuous data
 ```
-  \
+
 This also means you can do all the little tricks and tweaks you like with ggplot2, including setting the limits of the colour scale (which we will explore below in the [Faceted Mapping] section).
 
 ## Question 1
