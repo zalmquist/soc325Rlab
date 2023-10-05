@@ -1,5 +1,5 @@
 ---
-title: 'Lab 1: Review/Introduction to R and Data Structures'
+title: 'Lab 1 Inclass: Review/Introduction to R and Data Structures'
 author: '[PUT YOUR NAME HERE]'
 date: "`r Sys.Date()`"
 output:
@@ -33,7 +33,16 @@ sqrt(400)
 
 Now run the following code in console: (11-2. This code obviously is incomplete. What do you see in your console?
 
-You may notice that here, R is used as a calculator. Now, follow the instructions on this website [R as a calculator](https://sphweb.bumc.bu.edu/otlt/MPH-Modules/BS/R/R1_GettingStarted/R1_GettingStarted3.html) and play out with calculation in the console. 
+You may notice that here, R is used as a calculator. Now, follow the instructions on this website [R as a calculator](https://sphweb.bumc.bu.edu/otlt/MPH-Modules/BS/R/R1_GettingStarted/R1_GettingStarted3.html) and play out with calculation in the console. Write a brief summary of your experience below:
+
+<span style="color: red;">YOUR SOLUTION HERE</span>
+
+```{r}
+
+```
+
+<span style="color: red;">END OF YOUR SOLUTION HERE</span>
+
   
 # 2: Functions and help
 
@@ -43,20 +52,34 @@ If we didn't have a good guess as to what `sqrt()` will do, we can type `?sqrt` 
 
 **Question 2.1: looking at the Help file of function sqrt().**
 
-```{r}
-
-```
-
 **Argument** are inputs to a function. In this case, the only argument to `sqrt()` is x which can be a number or a vector of numbers.
 
 Help files provide documentation on how to use functions and what functions produce. 
+
+Note, that the R-chunk is turned off as help doesn't work in R Markdown. Write out the code to see the help file below:
+
+<span style="color: red;">YOUR SOLUTION HERE</span>
+
+```{r,eval=FALSE}
+
+```
+
+<span style="color: red;">END OF YOUR SOLUTION HERE</span>
 
 # 3: Objects
 
 R stores everything as an object, including data, functions, models, and output. 
 
 Creating an object can be done using the assignment operator: `<-`
-When you're typing inside of a code chunk (that's where the code goes), you can use `alt` plus `the minus key` to quickly type the arrow. 
+When you're typing inside of a code chunk (that's where the code goes), you can use `alt` plus `the minus key` to quickly type the arrow. Assigen 5 to "a".
+
+<span style="color: red;">YOUR SOLUTION HERE</span>
+
+```{r}
+
+```
+
+<span style="color: red;">END OF YOUR SOLUTION HERE</span>
 
 **Question 3.1: Create an new object called "new_object". Assign value 144 to it.**
 
@@ -86,22 +109,27 @@ new_object <- c(4,9,16,25,36)
 new_object
 ```
 
-If you name an object the same name as an existing object, it will overwrite it. 
+If you name an object the same name as an existing object, it will overwrite it. Overwrite "new_object" with "Hello World".
 
-**Question 3.2: calculate the square root of vector `new_object`.**
+<span style="color: red;">YOUR SOLUTION HERE</span>
 
 ```{r}
 
 ```
 
+<span style="color: red;">END OF YOUR SOLUTION HERE</span>
+
+**Question 3.2: calculate the square root of vector `new_object`.**
+
 The same principles can be used to create more complex objects like matrices, arrays, lists and dataframes (lists of equal-length vectors). Each element of the dataframe can be thought of as a column, and the length of each element is the number of rows. 
 
 Most data sets we work with will be read into R and stored as a dataframe, so the labs will mainly focus on working with these objects. 
 
-Let's take a look at an example of data on covid-19. To do so, we will first have to install a package called "coronavirus", developed by the Johns Hopkins University. Packages contain premade functions and/or data we can use. It is R's strength that there are a wide variety of packages!
+Let's take a look at an example of data on covid-19. To do so, we will first have to install a package called "coronavirus", developed by the Johns Hopkins University. Packages contain premade functions and/or data we can use. It is R's strength that there are a wide variety of packages! **Note, we wont be doing any installation on R, as this is done through UW IT, but if you install R on your own computer you will need to be able to install packages.**
 
 ```{r}
 #install.packages("coronavirus") # only install once, don't re-install until you update R
+#library(coronavirus)
 ```
 
 The package name here is a search term, i.e.text, not an object, so we must use quotation marks. 
@@ -115,6 +143,20 @@ data(coronavirus)
 
 This dataset contains the daily summary of Coronavirus cases (confirmed, death, and recovered), by state/province. Let's view the dataset.
 
+Print out the first ten rows of the "coronavirus" data set using the `head()` function. `head` shows the first 6 rows by default. Change the following code to show the first 10 rows.** 
+
+```{r}
+head(data.frame(num=1:26,let=letters,LET=LETTERS), n = 6)
+```
+
+<span style="color: red;">YOUR SOLUTION HERE</span>
+
+```{r}
+
+```
+
+<span style="color: red;">END OF YOUR SOLUTION HERE</span>
+
 # 4: Basics about R Markdown
 
 This is a R Markdown file. The Markdown file enables document analyses by combining text, code and output, so that you don't have to copy and paste into word. You can control the amount of code to display in your file, and it is easy for collaborators to understand. 
@@ -127,7 +169,7 @@ Inside R Markdown, R code are written into chunks. Code is sandwiched between se
 
 ```{r}
 # point R to the working directory on your computer
-#setwd()
+#setwd() ## we don't need to do this on the server
 ```
 
 You can make a new code chunk by using the insert menu above, typing the backtics by hand, or by pressing `CMD`+`option`+`i` on a Mac or `CTRL` + `ALT` + `i` on windows or linux.
@@ -156,6 +198,12 @@ The value of `x` rounded to the nearest two decimals is `r round(x,2)`.
 
 Inserting in-line code with R helps you prevent silly mistakes and makes your coding much more efficient - you don't have to manually update your hard-coded number if the calculation changes. 
 
+<span style="color: red;">YOUR SOLUTION HERE</span>
+
+Insert a line of code that produces `x` + `15` = YOURCODEHERE
+
+<span style="color: red;">END OF YOUR SOLUTION HERE</span>
+
 **Question 4.2: mix in-line R calculations/references with text. You may not hard-code any numbers referenced.**
 
 Start your text here:
@@ -163,6 +211,8 @@ Start your text here:
 More about RMarkdown: [R Markdown Cheat Sheet](https://www.rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf).
 
 **Question 4.3: Taking a look at the cheat sheet, and try to work on the following outputs.**
+
+<span style="color: red;">YOUR SOLUTION HERE</span>
 
 Italicize this line. 
 
@@ -177,18 +227,22 @@ Finally, how do we take a look at the final output of our Markdown document?
 
 Click on **Knit**, select *Knit to HTML*. 
 
-# References
-[Charles Lanfear, Introduction to R for Social Scientists](https://clanfear.github.io/CSSS508/Lectures/Week1/CSSS508_Week1_RStudio_and_RMarkdown.html#75)
+<span style="color: red;">END OF YOUR SOLUTION HERE</span>
+
 
 [Managing Data Frames](http://uc-r.github.io/dataframes)
 
-# 1: Opening this file
+# 5: Opening this file
 
-You'll download all of the lab files for this class as `.zip` files from canvas. To use them, you'll have to unzip them into their own directory (not a temporary directory that lets you explore the files inside), and open the project file. 
+All of the labs will be available on JupyterHub and you should start by loading `Lab 1.Rproj`. Write up your experience loading up the `Rproj` file. List three advantages of using the `RProj`.
 
-You should click on `lab2-read-modify-export-data.Rproj` when you open this lab project. R project files automatically give you access to the files and directories (folders) in the project directory. This makes it much easier for use to load multiple data sets.
 
-# 2: Describe data sources 
+<span style="color: red;">YOUR SOLUTION HERE</span>
+
+
+<span style="color: red;">END OF YOUR SOLUTION HERE</span>
+
+# 6: Describe data sources 
 
 Besides a package, the easiest way to work with external data is for it to be stored in a *delimited* text file, e.g. comma-separated values (.csv) or tab-separated values (.tsv). 
 
@@ -196,26 +250,32 @@ In the same directory as this `.Rmd` file and the project file, there's a direct
 
 These data come from Inside Airbnb, http://insideairbnb.com/. Go to the website and have a look at the About, Behind, and Get the Data pages. *Use what you read to answer the questions below. Just type your answers below the questions.*
 
-  **Question 2.1: What was the _context_ of this data's production, ie:** 
+**Question 6.1: What was the _context_ of this data's production, ie:** 
   
+  <span style="color: red;">YOUR SOLUTION HERE</span>
+
    - Who created this data set?
    - How did they do it?
    - Where did the data come from?
    - Is this active or passive data collection?
+
+<span style="color: red;">END OF YOUR SOLUTION HERE</span>
   
-  **Question 2.2: What were the original purpose of this data? Is that the same as the purpose of the person who collected it? As our purposes?**  
-  
-# 3: Set up and read data into R
+
+# 7: Set up and read data into R
 
 The package we'll use today is called "tidyverse." It's a collection of packages for data manipulation, exploration, and visualization.  
 
 You can read more about the tidyverse here: https://www.tidyverse.org/
 
-Follow the instructions we learned in lab 1, install the tidyverse package, then load the package.
+Follow the instructions we learned  to load the package `tidyverse`.
 
+
+<span style="color: red;">YOUR SOLUTION HERE</span>
 ```{r}
 
 ```
+<span style="color: red;">END OF YOUR SOLUTION HERE</span>
 
 To use data inside R, we first have to import, or *read*, that data into our environment. The chunk below reads the example data we'll use for this module.
 
@@ -223,67 +283,60 @@ To use data inside R, we first have to import, or *read*, that data into our env
 airbnb_data <- read_csv("data/seattle_airbnb.csv")
 ```
 
-Notice that here, we create an object of a dataframe called "airbnb_data". 
+Notice that here, we create an object of a dataframe called "airbnb_data". Print out the first ten rows.
 
-**Question 3.1: What is the role of each component in the above line of code?**
+<span style="color: red;">YOUR SOLUTION HERE</span>
+```{r}
+
+```
+<span style="color: red;">END OF YOUR SOLUTION HERE</span>
+
+**Question 8: What is the role of each component in the above line of code?**
 
  - airbnb_data: the variable name we used for the data frame
  - `<-` :
  - read_csv() :
  - "data/seattle_airbnb.csv" 
  
-# 4: Looking at the data
+ 
+# 8: Looking at the data
 
 Let's take a look at the data.   
 
-**Question 4.1 Go ahead and type that into the console.**
-
 You can also look at the entire data set using RStudio's built-in viewer. To use that, we use the function 'View().' We can run that command from the console, or from a code chunk:
-
-**Question 4.2 Follow the instructions in the code block and run it.**
 
 ```{r}
 # "un-comment" the line below this one, by removing the '#' and the space
 # View(airbnb_data)
 ```
 
-The `head()` function shows you the first six rows of a data frame. 
-
-**Question 4.3 Use the head function in the code chunk below to show the first rows of the airbnb_data.**
-
-```{r}
-
-```
-
-**Question 4.4: `head` shows the first 6 rows by default. Change the following code to show the first 10 rows.** 
-
-```{r}
-head(airbnb_data, n = 6)
-```
-
 What if you want to look at the *last* several rows of a data frame instead of the first several rows?
 
 Let's read the documentation for `head` by typing `?head` into the console.
 
-**Question 4.5 Based on what you found out, show the last 5 rows of airbnb_data**
+**Question 8.1 Based on what you found out, show the last 5 rows of airbnb_data**
 
+<span style="color: red;">YOUR SOLUTION HERE</span>
 ```{r}
 
 ```
+<span style="color: red;">END OF YOUR SOLUTION HERE</span>
 
 You can extract a single column by name using `$`. Type the name of the dataframe (airbnb) first, then `$` and finally the name of the column. 
 
-**Question 4.6 Use `$` to display the 'price' column**
+**Question 8.2 Use `$` to display the 'price' column**
 
+<span style="color: red;">YOUR SOLUTION HERE</span>
 ```{r}
 
 ```
+<span style="color: red;">END OF YOUR SOLUTION HERE</span>
 
-# 5. Subsetting data
+# 9. Subsetting data
 
 Sometimes we have a large dataset but we only need to work with a subset of it. There are several ways to modify and subset a dataframe. Here, we will learn to subset with indices. 
 
-**Question 5.1: Change the code below so that we load the haven package and make a new object called `twitter_survey` by using the read_sav() function to read the file "data/Pew_Twitter_Study_for_release.sav".**
+**Question 9.1: Change the code below so that we load the haven package and make a new object called `twitter_survey` by using the read_sav() function to read the file "data/Pew_Twitter_Study_for_release.sav".**
 
 ```{r}
 library(tidyverse)
@@ -313,363 +366,15 @@ If the variables we want are in consecutive columns, we can use the colon notati
 twitter_subset2 <- twitter_survey[,1:4]
 ```
 
-**Question 5.2: Create a subset of dataframe twitter_subject, taking the first 100 rows and variables PARTY and PPWORK. Assign this object with name "my_twitter_survey".**
+**Question 9.2: Create a subset of dataframe twitter_subject, taking the first 100 rows and variables PARTY and PPWORK. Assign this object with name "my_twitter_survey".**
+
+
+<span style="color: red;">YOUR SOLUTION HERE</span>
 ```{r}
 
 ```
+<span style="color: red;">END OF YOUR SOLUTION HERE</span>
 
-# 6. Export data
-
-Getting data out of R into a delimited file is very similar to getting it into R:
-```{r}
-write_csv(twitter_subset, file = "data/twitter_subset.csv")
-```
-
-This saved the data we just modified into a file called `twitter_subset.csv` in your working directory. 
-
-Exporting to a `.csv` drops R metadata, such as whether a variable is a character or factor(which we will learn in the next labs). You can save objects (data frames, lists, etc.) in R formats to preserve this. 
-
-  - `.Rds` format:
-    - Used for single objects, doesn't save original the object name
-    - Save: `write_rds(old_object_name,"path.Rds")`
-    - Load: `new_object_name <- read_rds("path.Rds")
-  
-  - `.Rdata` or `.Rda` format:
-    - Used for saving multiple files where the original object names are preserved
-    - Save: `save(object1, object2,..., file = "path.Rdata")`
-    - Load: `load("path.Rdata")` *without assignment operator*
-    
-**Question 6.1. Save object my_twitter_survey into an `.Rda` file.**
-
-```{r}
-
-```
-
-
-# References
-[Charles Lanfear, Introduction to R for Social Scientists](https://clanfear.github.io/CSSS508/Lectures/Week5/CSSS508_Week5_data_import_export_cleaning.html#27)
-
-[Subsetting data](https://stats.idre.ucla.edu/r/modules/subsetting-data/)
-
-
-
-# 1. Introduction and setup
-
-We will be looking at what cell tracking data can tell us about covid-19 exposure in today's lab through managing and summarizing data. The data set we use today contains indices describing possible exposure to covid-19 on the basis of anonymous cell phone movement data produced by [Place IQ](https://www.placeiq.com). The main index we look at will be state-level device exposure index (DEX). According to the authors who developed this index:
-
-- State-level device exposure index (DEX): For a smartphone residing in a given state, how many distinct devices also visited any of the commercial venues that this device visited today? The state-level DEX reports the state-level average of this number across all devices residing in the state that day. 
-  - DEX-income reports the state-level average of this number for the four groups of devices residing in each of four neighborhood-income quantiles. For DEX indices by census-block-group income quantile, 1 indexes the poorest quantile, and 4 the richest.
-
-To get a complete view of the project of deriving the above exposure indices from PlaceIQ data, visit [Measuring movement and social contact with smartphone data: a real-time application to COVID-19](https://github.com/COVIDExposureIndices/COVIDExposureIndices) by Couture et al. 2021. 
-
-To wrangle data in R, there are two main dialects: one is to use base R, and the other is to use package `tidyverse`. Many people mix the two. We will be using a more pure `tidyverse` style in this lab. 
-
-As a first step, we will setup the package and data.
-
-**Question 1.1: load package tidyverse and read data "data/state_dex_cleaned.csv", assign the object name "state_dex".**
-
-```{r}
-state_dex<-read_csv("data/state_dex_cleaned.csv")
-```
-
-We can get a glimpse of object `state_dex` by running the below command:
-
-```{r}
-glimpse(state_dex)
-```
-**Question 1.2. How many rows do you get in this data frame? What does each row represent?**
-
-**Question 1.3. What are the possible bias of measuring device exposure by restricting venues to commercial locations? Do you think DEX might overestimate or underestimate the exposure?**
-
-
-# 2. Modify data frame
-
-This section introduces key `dplyr` verbs to modify a data frame. 
-
-**Pipe** The core package in `tidyverse` to manipulate data is `dplyr`. It is loaded in R's memory when we loaded `tidyverse` earlier. `dplyr` uses the `magrittr` forward pipe operator, usually called simply a **pipe**. We write pipes like `%>%` (`Ctrl+Shift+M`, or `CMD+Shift+M` on Mac). Pipes take the object on the *left* and apply the function on the *right*: `x %>% f(y) = f(x,y)`. An example is shown below:
-
-```{r}
-state_dex %>% 
-  filter(state == "PA") %>% # create a subset of data
-  head(5)
-```
-Pipes save us typing, make code readable, and allow chaining like above, so we use them *all the time* when manipulating data frames. 
-
-**Pipe Assignment** When creating a new object from the output of piped functions, place the assignment operator at the beginning (you can do assignment at the end of the chain as well):
-
-```{r}
-PA_dex <- state_dex %>% 
-  filter(state == "PA") 
-```
-
-**Question 2.1. Use the pipe to show the last 20 rows of the data frame.**
-```{r}
-
-```
-
-**filter()** choose rows (observations) by some characteristics
-
-```{r}
-state_dex %>% 
-  filter(date>"2020-03-01") %>% 
-  head(5)
-```
-**operator %in%** filter rows to things in some *set*.
-
-**select()** choose columns (variables) by name
-
-```{r}
-state_dex %>% 
-  select(state,date,dex) %>% 
-  head(5)
-```
-We can also drop only specific columns with select() using `-` signs. 
-
-```{r}
-state_dex %>% 
-  select(-num_devices_income_1,-num_devices_income_2)
-```
-
-**Question 2.2. Use select to show only the state, date and dex variables.**
-
-```{r}
-
-```
-
-**Logical operators** 
-
-```{r}
-state_dex %>% 
-  filter(state=="AK")
-```
-What does `state=="AK` actually do?
-```{r}
-head(state_dex$state=="AK",100)
-```
-It returns a vector of `TRUE` or `FALSE` values. When used for subset, elements for which a `TRUE` is given are returned, while those corresponding to `FALSE` are dropped. We used `==` for testing "equals". 
-
-There are many other *logical operators*:
-  - `!=`: not equal to
-  - `>`,`>=`,`<`,`<=`: less than, less than or equal to, etc.
-  - `%in%`: used with checking equal to one of several values
-
-Or we can combine multiple logical conditions:
-  - `&`: both conditions need to hold (AND)
-  - `|`: at least one condition needs to hold (OR)
-  - `!`: inverts a logical condition (`TRUE` becomes `FALSE`, `FALSE` becomes `TRUE`)
-  
-
-**Question 2.3. Create a subset of state_dex by only look at dex for Texas. This new data frame contains the following variables only: state, date, dex, dex_income_1, dex_income_2, dex_income_3, dex_income_4. Name this object "TX_dex".**
-
-```{r}
-
-```
-
-**Question 2.4. Create a set of states containing Washington, Oregon and California. Find observations in state_dex that only belong to this set of states. How many rows do you get?**
-
-```{r}
-
-```
-
-**arrange** put data in order by one or more variables. 
-
-```{r}
-state_dex %>% 
-  arrange(state, desc(dex))
-```
-
-The data are sorted by ascending `state` and descending `dex`.
-
-**Question 2.5. Now go back to TX_dex data. Find ten days in February 2020 with the highest dex, and name this object TX_Feb. Do the same for April 2020 and name this object TX_Apr. Take a look at TX_Feb and TX_Apr. What do you observe?**
-(Check hints if you have troubles)
-
-```{r}
-
-```
-
-# 3. Summarize data frames
-
-**summarize()** takes your column(s) of data and computes something using every row:
-
-- count how many rows there are
-- calculate the mean
-- compute the sum
-- Obtain a minimum or maximum value. 
-
-You can use any function in summarize() that aggregates *multiple values* into to a *single value* (like sd(), mean(), or max()).
-
-```{r}
-state_dex %>% 
-  filter(date<"2020-03-01") %>% 
-  summarize(n_obs = n(),
-            mean_dex = mean(dex),
-            range_dex = max(dex)-min(dex))
-```
-
-**Question 3.1. Calculate the standard deviation of dex in Pennsylvania.**
-
-```{r}
-
-```
-
-**group_by** the special function `group_by()` changes how functions operate on the data, most importantly `summarize()`. 
-
-Functions after `group_by` are computed *within* each group as defined by variables given, rather than over all rows at once. Typically the variables you group by will be integers, factors, or characters, and not continuous real values. 
-
-
-```{r}
-state_dex %>% 
-  group_by(state) %>% 
-  summarize(mean_dex=mean(dex))
-```
-
-**Question 3.2. On March 15, 2020, what is the difference between dex of the richest neighborhood and dex of the poorest neighborhood for each state?**
-(Check hints if you have troubles)
-
-```{r}
-
-```
-
-**Question 3.3. On April 1, 2020, what is the average dex number of the following states: MA, NY, PA?**
-
-```{r}
-
-```
-**Question 3.4. In March, for all states except for Alaska and Hawaii, what is the lowest dex? Which date and state does it associate with?**
-
-```{r}
-
-```
-
-# 4. Create new variables
-
-**mutate** you can add new columns to a data frame using `mutate()`. 
-
-```{r}
-state_dex %>% 
-  filter(state=="DC") %>% 
-  mutate(devices_thousand=num_devices/1000,
-         mean_dex = mean(dex))
-```
-
-**Question 4.1. Take a look at the above code. What is the difference between using `summarize` and `mutate` to calculate group mean?**
-
-**ifelse()** A common function used in `mutate()` (and in general R programming) is ifelse(). It returns a vector of values depending on a logical test. For example:
-
-```{r}
-example <- c(1,0,NA,-2)
-ifelse(example>0, "Positive","Not positive")
-```
-
-```{r}
-state_dex %>% 
-  mutate(full_state_name = 
-           ifelse(state=="AK","Alaska",
-                  as.character(state))) %>% 
-        select(state,date,dex,full_state_name) %>% 
-        distinct(full_state_name)
-```
-
-**distinct** allows us to see all the *unique values* in our data for one or combinations of columns. 
-
-**Question 4.2. For each state, what is the mean dex for each month?**
-(Check hints if you have troubles)
-
-```{r}
-
-```
-
-**Question 4.3. Which states have the highest mean dex in February, March and April respectively?**
-```{r}
-
-```
-
-# 5. Basics of data visualization
-
-Now that we can adjust what data we're looking at with some verbs, we can start making visualizations. Not only do these look cool, but they're a great way to get a sense for big patterns in your data.
-
-We'll start by plotting a single variable, using bar charts and histograms. To do so, we need to install and load the `ggplot2` package. In the next lab, we will learn how to use `ggplot2` in detail. 
-
-**Question 5.1. Install and load the `ggplot2` package.**
-```{r}
-
-```
-
-## Histograms
-
-What's the distribution of dex of Washington state? We can see this using a histogram. Histograms are for *continuous* or numeric values.
-
-```{r}
-state_dex %>%
-  filter(state=="WA") %>% # filter for state WA
-  ggplot(aes(x = dex)) + # start a plot and set the aesthetics with the x axis dex
-  geom_histogram() # make a histogram
-```
-
-**Question 5.2: Make a histogram of dex of a state you are interested in. How is the dex distributed differently in February, March and April? Do you think histogram is a good way of plotting changes with time?**
-
-```{r}
-
-```
-
-
-## Bar charts
-
-Now we look at how dex differ in different states by counting how many days do different states have a dex of higher than 45. Bar charts are for *categorical* values.
-
-```{r}
-state_dex %>% # take state_dex data
-  filter(state%in%(c("WA","KS","FL","AZ","NY")) & dex>45) %>% # filter by state and dex
-  ggplot(aes(x=state)) + # start a plot and set the aesthetics with the x axis the selected states
-  geom_bar() # make a bar chart
-```
-
-It's a good idea to give every plot a *title*, to tell people what it's about. 
-
-```{r}
-state_dex %>% # take state_dex data
-  filter(state%in%(c("WA","KS","FL","AZ","NY")) & dex>45) %>% 
-  ggplot(aes(x=state)) + # start a plot and set the aesthetics with the x axis the selected states
-  geom_bar() # make a bar chart +
-  labs(title = "Number of days with DEX higher than 45 by selected states")
-```
-
-**Question 5.3. Make a bar chart comparing the count of days of which dex is higher than 60 by states of your choice. Is there a difference if you compare dex of the poorest neighborhood and of the richest neighborhood? Why do you think is the difference?**
-
-```{r}
-
-```
-
-# Just for fun: ggplot themes
-
-The gray theme is the default, but ggplot has a variety of themes you can use. For example, someone may like the minimal theme better (`theme_minimal`). Type `?theme_gray` for a list. 
-
-```{r}
-
-state_dex %>%
-  filter(state=="WA") %>% # filter for state WA
-  ggplot(aes(x = dex)) + # start a plot and set the aesthetics with the x axis dex
-  geom_histogram() + 
-  theme_minimal() +
-  labs(title = "Distribution of dex",
-       x = "dex")
-# for even more fun themes:
-# install.packages("ggthemes")
-# library(ggthemes)
-# state_dex %>%
-#   filter(state=="WA) %>% 
-#   ggplot(aes(x = dex)) + 
-#   geom_histogram() +
-#   theme_wsj()
-```
-
-
-
-Hints
-
-2.5. Use the `&` operator to apply multiple filters
-3.2. Use `==` operator to check for exactly equal
-4.2. There are multiple ways to extract month from date format. Try install and load package `lubridate` and learn from the Help file on how to do it. Your answer should contain 153 rows, i.e. three rows for each state.
 
 
 # References
@@ -678,5 +383,6 @@ Cuture, Victor, Jonathan I. Dingel, Allison Green, Jessie Handbury, and   Kevin 
 Charles Lanfear, [Introduction to R for Social Scientists](https://clanfear.github.io/CSSS508/)
 
 [Short Classic Poems](https://medium.com/@EmEmbarty/31-of-the-best-and-most-famous-short-classic-poems-of-all-time-e445986e6df)
+
 
   

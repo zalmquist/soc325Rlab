@@ -1,4 +1,0 @@
-$(function(){var d=!!window.IntersectionObserver,g={rootMargin:"300px 0px"},k=function(h){for(var b=$(document.createElement("img")),d=h.attributes,c=0;c<d.length;c++){var a=d[c].name;0==a.indexOf("data-")&&(a=a.substr(5));b.attr(a,d[c].value)}$(h).replaceWith(b)},c=null,e=0;d&&(c=new IntersectionObserver(function(a){a.forEach(function(b){b.isIntersecting&&(b=b.target,c.unobserve(b),k(b),e--);0==e&&c.disconnect()})},g));var l=$("span.lazyloadImg");e=l.length;l.each(function(){null!==c?($(this).text("-"),
-c.observe(this)):k(this)});var m=function(a){a.prop("src",a.data("lazy-src"))},a=null,f=0;d&&(a=new IntersectionObserver(function(c){c.forEach(function(b){b.isIntersecting&&(b=b.target,a.unobserve(b),m($(b)),f--);0==f&&a.disconnect()})},g));d=$("iframe[data-lazy-src]");f=d.length;d.each(function(){null!==a?a.observe(this):m($(this))})});
-
-//06d2b517aaa1f047e24af3d603333afb
