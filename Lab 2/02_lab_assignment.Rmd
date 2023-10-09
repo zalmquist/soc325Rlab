@@ -1,0 +1,237 @@
+---
+title: 'Lab 2 Assignment: Basics of Statistics in R'
+author: '[PUT YOUR NAME HERE]'
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: yes
+  pdf_document:
+    toc: yes
+subtitle: 'SOC 325: Quantified-Self'
+---
+
+# Getting started: Editing and running code
+
+There are several ways we can run code:
+
+  - Highlight lines in the editor window and click **Run** at the top or hit `Ctrl` + `Enter` or `CMD` + `Enter` (Mac) to run them all.
+  - With your caret on a line you want to run, hit `Ctrl` + `Enter` or `CMD` + `Enter` (Mac). Note your caret moves to the next line, so you can run code sequentially with repeated presses. 
+  - Type individual lines in the console and press enter. 
+  - In R Markdown documents, click within a code chunk and click the green arrow to run the chunk. The button beside that runs all prior chunks. 
+  
+```{r,include=FALSE}
+library(tidyverse)
+```
+  
+# What is data? What is statistics?
+
+How does data fit into the scientific process?
+
+1. Identify a question or problem (e.g. how fast did I run this month?)
+2. Collect relevant data on the topic (e.g. record runs for a month)
+3. Analyze the data
+4. Form a conclusion 
+
+>Statistics as a subject focuses on making stages 2-4 objective, rigorous, and efficient. That is, statistics has three primary components: How best can we collect data? How should it be analyzed? And what can we infer from the analysis?
+
+* Data: Measurement of an item/event
+  - e.g., height, weight
+* Statistic: Functions on the data
+  - e.g., mean, meadian, mode, min, max
+* Probability (distribution): Probability is the measure of the likelihood that an event will occur (Wikipedia)
+
+`airquality` Daily air quality measurements in New York, May to September 1973. Use `ggplot` to plot `Ozone` versus the `Wind` with a `smoother`.
+
+<span style="color: red;">YOUR SOLUTION HERE</span>
+
+```{r}
+
+```
+
+<span style="color: red;">END OF YOUR SOLUTION HERE</span>
+
+## Experiments
+
+**Treatment group** Patients in the treatment group received a stent and medical management. The medical management included medications, management of risk factors, and help in lifestyle modification.
+
+**Control group** Patients in the control group received the same medical manage- ment as the treatment group but did not receive stents.
+
+```{r}
+library(infer)
+data(gss)
+
+# calculate the observed statistic
+observed_statistic <- gss %>%
+  specify(hours ~ college) %>%
+  calculate(stat = "diff in means", order = c("degree", "no degree"))
+
+observed_statistic
+
+# generate the null distribution with randomization
+null_dist_2_sample <- gss %>%
+  specify(hours ~ college) %>%
+  hypothesize(null = "independence") %>%
+  generate(reps = 1000, type = "permute") %>%
+  calculate(stat = "diff in means", order = c("degree", "no degree"))
+
+# visualize the randomization-based null distribution and test statistic!
+null_dist_2_sample %>%
+  visualize() + 
+  shade_p_value(observed_statistic,
+                direction = "two-sided")
+
+# calculate the p value from the randomization-based null 
+# distribution and the observed statistic
+p_value_2_sample <- null_dist_2_sample %>%
+  get_p_value(obs_stat = observed_statistic,
+              direction = "two-sided")
+
+p_value_2_sample
+
+t_test(x = gss, 
+       formula = hours ~ college, 
+       order = c("degree", "no degree"),
+       alternative = "two-sided")
+```
+
+Repeat the above, but with `sex` instead of `college`.
+
+<span style="color: red;">YOUR SOLUTION HERE</span>
+
+```{r}
+
+```
+
+<span style="color: red;">END OF YOUR SOLUTION HERE</span>
+
+
+## Five Named Graphs
+
+1. scatterplots
+2. linegraphs
+3. boxplots
+4. histograms
+5. barplots
+
+Let's consider *flights*, filter `carrier` by `DL`. Plot `dep_delay` by `arr_delay`.
+
+<span style="color: red;">YOUR SOLUTION HERE</span>
+
+```{r}
+library(nycflights13)
+data(flights)
+#all_dl_flights<-flights%>%filter()
+```
+
+
+
+```{r,fig.align='center',fig.height=3}
+
+## Scatter Plot
+
+```
+
+
+
+
+<span style="color: red;">END OF YOUR SOLUTION HERE</span>
+
+### Linegraphs
+
+Our focus now turns to the temp variable in this weather data-set. 
+
+```{r}
+data(weather)
+head(weather)
+```
+
+Plot `weather` `dew` by `temp`.
+
+<span style="color: red;">YOUR SOLUTION HERE</span>
+
+```{r,fig.align='center',fig.height=5,cache=FALSE}
+## Line plot
+```
+
+<span style="color: red;">END OF YOUR SOLUTION HERE</span>
+
+
+### Histograms
+
+Histogram `weather` data set and variable `humid`.
+
+<span style="color: red;">YOUR SOLUTION HERE</span>
+```{r}
+## Histogram
+```
+<span style="color: red;">END OF YOUR SOLUTION HERE</span>
+
+
+  
+# Review of Mathematics
+
+## Scalar
+
+[Scalar](https://en.wikipedia.org/wiki/Scalar_(mathematics)). For our purposes this means, effectively, a single number in vector, e.g. $5$.
+
+Compute 1 times 2, and 2 devided by 3.
+
+<span style="color: red;">YOUR SOLUTION HERE</span>
+```{r}
+
+```
+<span style="color: red;">END OF YOUR SOLUTION HERE</span>
+
+
+## Vector
+
+* [Vector](https://en.wikipedia.org/wiki/Vector_(mathematics_and_physics)). For our purposes this means a sequence of data of the same type.
+* Created in r with `c()`.
+* Checked with `is.vector()`
+
+Create a vector of five numbers and verify it is a vector.
+
+<span style="color: red;">YOUR SOLUTION HERE</span>
+```{r}
+
+```
+<span style="color: red;">END OF YOUR SOLUTION HERE</span>
+
+## Matrix and data.frame
+
+* [Matrix](https://en.wikipedia.org/wiki/Matrix_(mathematics)): For our purposes this means a collection of vectors.
+* `data.frame` is a special R object that is a matrix which can have different types of variables on the columns. 
+
+
+Create a data.frame composed of a vector of numbers and vector of letters.
+
+<span style="color: red;">YOUR SOLUTION HERE</span>
+```{r}
+
+```
+<span style="color: red;">END OF YOUR SOLUTION HERE</span>
+
+# Statistical Inference
+
+```{r,include=FALSE}
+library(epiDisplay)
+data(attitudes)
+```
+
+Example of Regression `summary`
+```{r}
+summary(lm(rating~complaints,data=attitude))
+```
+
+Compute the following statistics:
+
+* t-test between `raiting` and `learning`.
+* correlation test between `complaints` and `advance`
+* regression between `raiting` and `learning`
+
+<span style="color: red;">YOUR SOLUTION HERE</span>
+```{r}
+
+```
+<span style="color: red;">END OF YOUR SOLUTION HERE</span>
+

@@ -1,0 +1,394 @@
+---
+title: 'Lab 2 Inclass: Basics of Statistics in R'
+author: '[PUT YOUR NAME HERE]'
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: yes
+  pdf_document:
+    toc: yes
+subtitle: 'SOC 325: Quantified-Self'
+---
+
+# Getting started: Editing and running code
+
+There are several ways we can run code:
+
+  - Highlight lines in the editor window and click **Run** at the top or hit `Ctrl` + `Enter` or `CMD` + `Enter` (Mac) to run them all.
+  - With your caret on a line you want to run, hit `Ctrl` + `Enter` or `CMD` + `Enter` (Mac). Note your caret moves to the next line, so you can run code sequentially with repeated presses. 
+  - Type individual lines in the console and press enter. 
+  - In R Markdown documents, click within a code chunk and click the green arrow to run the chunk. The button beside that runs all prior chunks. 
+  
+```{r,include=FALSE}
+library(tidyverse)
+```
+  
+# What is data? What is statistics?
+
+How does data fit into the scientific process?
+
+1. Identify a question or problem (e.g. how fast did I run this month?)
+2. Collect relevant data on the topic (e.g. record runs for a month)
+3. Analyze the data
+4. Form a conclusion 
+
+>Statistics as a subject focuses on making stages 2-4 objective, rigorous, and efficient. That is, statistics has three primary components: How best can we collect data? How should it be analyzed? And what can we infer from the analysis?
+
+* Data: Measurement of an item/event
+  - e.g., height, weight
+* Statistic: Functions on the data
+  - e.g., mean, meadian, mode, min, max
+* Probability (distribution): Probability is the measure of the likelihood that an event will occur (Wikipedia)
+
+*Example:*
+
+`cars`: The data give the speed of cars and the distances taken to stop. Note that the data were recorded in the 1920s.
+
+```{r}
+cars<-datasets::cars
+g <- ggplot(cars, aes(speed, dist))
+g + geom_point() +
+    geom_smooth()
+```
+
+## Experiments
+
+**Treatment group** Patients in the treatment group received a stent and medical management. The medical management included medications, management of risk factors, and help in lifestyle modification.
+
+**Control group** Patients in the control group received the same medical manage- ment as the treatment group but did not receive stents.
+
+```{r,echo=FALSE,message=FALSE,warning=FALSE}
+library(openintro)
+data(COL)
+
+plot(c(-0.05,1.2),c(0.39,1),type='n',axes=FALSE)
+
+text(0.59, 0.89, 'sun exposure')
+rect(0.4,0.8,0.78,1)
+
+text(0.3, 0.49, 'use sunscreen')
+rect(0.1,0.4, 0.48, 0.6)
+arrows(0.49, 0.78, 0.38, 0.62, length=0.08, lwd=1.5)
+
+text(0.87, 0.5, 'skin cancer')
+rect(0.71,0.4, 1.01, 0.6)
+arrows(0.67, 0.78, 0.8, 0.62, length=0.08, lwd=1.5)
+
+arrows(0.5, 0.5, 0.69, 0.5, length=0.08, col=COL[6,2])
+#text(0.6, 0.495, 'X', cex=2, col=COL[4])
+text(0.595, 0.565, "?", cex=1.5, col=COL[4])
+```
+
+## Random Sampling
+
+Random sampling, sometimes called probability sampling.
+
+In a probability sample, each unit in the population has a known probability of selection
+This is usually done with a method for randomization (e.g., a random number generator or table).
+
+Typically we assume there is a population (e.g., everyone who graduated from UW) and then a sample (e.g., random subset of all graduates). This could be refined sample from subgroup, e.g. random sample of graduates from health-related fields.
+
+
+```{r,echo=FALSE,message=FALSE,warning=FALSE}
+library(openintro)
+data(COL)
+
+plot(c(0,2), c(0,1.1), type='n', axes=F)
+temp <- seq(0, 2*pi, 2*pi/100)
+x <- 0.5+0.5*cos(temp)
+y <- 0.5+0.5*sin(temp)
+lines(x,y)
+
+s <- matrix(runif(700), ncol=2)
+S <- matrix(NA, 350, 2)
+j <- 0
+sub <- rep(FALSE, 1000)
+for(i in 1:dim(s)[1]){
+	if(sum((s[i,] - .5)^2) < .23){
+		j <- j+1
+		S[j,] <- s[i,]
+	}
+	if(sum((s[i,]-c(0.05, 0.18)-.5)^2) < .07){
+		sub[j] <- TRUE
+	}
+}
+points(S, col=COL[4,4-2*sub], pch=20)
+text(0.5, 1, 'all graduates', pos=3)
+lines((x-0.5)*2*sqrt(0.07)+0.55,(y-.5)*2*sqrt(0.07)+0.68)
+
+set.seed(7)
+N <- sample((1:j)[sub], 25)
+lines((x-0.5)/2+1.5, (y-.5)/2+.5, pch=20)
+
+SS <- (S[N,]-0.5)/2 + 0.5
+points(SS[c(2, 5, 7, 15),1]+1, SS[c(2, 5, 7, 15),2], col=COL[1,2], pch=20, cex=1.5)
+text(1.5, 0.75, 'sample', pos=3)
+
+for(i in c(2, 5, 7, 15)){
+	arrows(S[N[i],1], S[N[i],2], SS[i,1]+1-0.03, SS[i,2], length=0.08, col=COL[5], lwd=1.5)
+}
+rect(0.143, 0.2, 0.952, 0.301, border="#00000000", col="#FFFFFF88")
+rect(0.236, 0.301, 0.858, 0.403, border="#00000000", col="#FFFFFF88")
+text(0.55, 0.5+0.18-sqrt(0.07), 'graduates from\nhealth-related fields', pos=1)
+```
+
+
+## Five Named Graphs
+
+1. scatterplots
+2. linegraphs
+3. boxplots
+4. histograms
+5. barplots
+
+Let's consider *flights*
+
+```{r}
+library(nycflights13)
+data(flights)
+all_alaska_flights<-flights%>%filter(carrier=="AA")
+head(all_alaska_flights)
+```
+
+### Scatterplots: Example
+
+```{r,fig.align='center',fig.height=3}
+ggplot(data = all_alaska_flights, aes(x = dep_delay, y = arr_delay)) + 
+  geom_point()
+```
+
+```{r,fig.align='center',fig.height=5}
+ggplot(data = all_alaska_flights, mapping = aes(x = dep_delay, y = arr_delay)) + 
+  geom_point(alpha = 0.2)
+```
+
+```{r, fig.align='center',fig.height=5}
+ggplot(all_alaska_flights, aes(x = dep_delay, y = arr_delay)) + 
+  geom_jitter(width = 30, height = 30)
+```
+˜
+
+* Within the `ggplot()` function call, we specify two of the components of the grammar:
+    1. The `data` frame to be `all_alaska_flights` by setting `data = all_alaska_flights`
+    1. The `aes`thetic mapping by setting `aes(x = dep_delay, y = arr_delay)`. Specifically
+        * the variable `dep_delay` maps to the `x` position aesthetic
+        * the variable `arr_delay` maps to the `y` position aesthetic
+* We add a layer to the `ggplot()` function call using the `+` sign. The layer in question specifies the third component of the grammar:  the `geom`etric object. In this case the geometric object are `point`s, set by specifying `geom_point()`.
+
+### Linegraphs
+
+Our focus now turns to the temp variable in this weather data-set. 
+
+```{r}
+data(weather)
+head(weather)
+```
+
+```{r,fig.align='center',fig.height=5,cache=FALSE}
+ggplot(data = weather, aes(x = time_hour, y = temp)) +geom_line()
+```
+
+Much as with the `ggplot()`, we describe the components of the Grammar of Graphics:
+
+* Within the `ggplot()` function call, we specify two of the components of the grammar:
+    1. The `data` frame to be `early_january_weather` by setting `data = early_january_weather`
+    1. The `aes`thetic mapping by setting `aes(x = time_hour, y = temp)`. Specifically
+        * `time_hour` (i.e. the time variable) maps to the `x` position
+        * `temp` maps to the `y` position
+* We add a layer to the `ggplot()` function call using the `+` sign
+* The layer in question specifies the third component of the grammar:  the `geom`etric object in question. In this case the geometric object is a `line`, set by specifying `geom_line()`. 
+
+### Histograms
+
+Let's consider the `temp` variable in the `weather` data frame once again, but now unlike with the linegraphs, let's say we don't care about the relationship of temperature to time, but rather we care about the *(statistical) distribution* of temperatures:
+
+```{r}
+ggplot(data = weather, mapping = aes(x = temp)) +
+  geom_histogram()
+```
+
+This gives us a general idea of how the values of `temp` differ.  We see that temperatures vary from around `r round(min(weather$temp, na.rm = TRUE), 0)` up to `r round(max(weather$temp, na.rm = TRUE), 0)` degrees Fahrenheit.  The area between 40 and 60 degrees appears to have more points plotted than outside that range.
+
+Note here:
+
+* There is only one variable being mapped in `aes()`: the single continuous variable `temp`. You don't need to compute the y-aesthetic: it gets computed automatically.
+* We set the `geom`etric object to be `geom_histogram()`
+* We got a warning message of `1 rows containing non-finite values` being removed. This is due to one of the values of temperature being missing. R is alerting us that this happened.  
+* Another warning corresponds to an urge to specify the number of bins you'd like to create.
+
+
+  
+# Review of Mathematics
+
+## Scalar
+
+[Scalar](https://en.wikipedia.org/wiki/Scalar_(mathematics)). For our purposes this means, effectively, a single number in vector, e.g. $5$.
+
+```{r}
+5*5
+5+5
+5-5
+5/5
+class(5)
+```
+
+## Vector
+
+* [Vector](https://en.wikipedia.org/wiki/Vector_(mathematics_and_physics)). For our purposes this means a sequence of data of the same type.
+* Created in r with `c()`.
+* Checked with `is.vector()`
+
+```{r}
+c(5,3,4,5)
+rep(5,5)
+seq(1,5,1)
+1:5
+class(1:5)
+class(c(5.5,3,4,5))
+is.vector(1:5)
+```
+
+## Matrix and data.frame
+
+* [Matrix](https://en.wikipedia.org/wiki/Matrix_(mathematics)): For our purposes this means a collection of vectors.
+* `data.frame` is a special R object that is a matrix which can have different types of variables on the columns. 
+
+```{r}
+## Matrix
+matrix(1:4,nc=2,nr=2,byrow = TRUE)
+
+## data.frame
+data.frame(bin=rbinom(5,1,.25),let=letters[1:5],seq=seq(1,5,1))
+```
+
+# Review of Statistical Inference
+
+## Case Study: Gender Discrimination
+
+* A study investigating gender discrimination in the 1970s
+* Context, personnel decisions within a bank
+* Q: Are females discriminated against in promotion decisions made by male managers?
+
+* Experimental set up:
+	* 48 male bank supervisors attending a management institute at the University of North Carolina in 1972
+	* They were asked to assume the role of the personnel director of a bank and were given a personnel file to judge whether the person should be promoted to a branch manager position
+	* The files given to the participants were identical
+	* Except that half of them indicated the candidate was male and the other half indicated the candidate was female
+	* These files were randomly assigned to the subjects
+	* For each supervisor we recorded the gender associated with the assigned file and the promotion decision
+
+```{r,echo=FALSE}
+NC_bank<-data.frame(decision=c(rep("promoted",21),rep("not promoted",3),rep("promoted",14),rep("not promoted",10)),gender=c(rep("male",24),rep("female",24)))
+addmargins(t(table(NC_bank)))
+```
+
+**Question** Does this represent discrimination?
+
+```{r,echo=FALSE}
+NC_bank<-data.frame(decision=c(rep("promoted",21),rep("not promoted",3),rep("promoted",14),rep("not promoted",10)),gender=c(rep("male",24),rep("female",24)))
+addmargins(t(table(NC_bank)))
+```
+
+* 58.3% for females versus 87.5% for males
+
+This represents 29% difference:
+
+ $$\frac{21}{24} − \frac{14}{24} = 0.292$$
+
+> We will call this a **point estimate** of the true effect
+
+**Formally**
+
+* $H_0$: **Null hypothesis**. The variables gender and decision are independent. They have no relationship, and the observed difference between the proportion of males and females who were promoted, 29.2%, was due to chance.
+
+* HA: **Alternative hypothesis**. The variables gender and decision are not indepen- dent. The difference in promotion rates of 29.2% was not due to chance, and equally qualified females are less likely to be promoted than males.
+
+> These hypotheses are part of what is called a hypothesis test. A hypothesis test is a statistical technique used to evaluate competing claims using data. Often times, the null hypothesis takes a stance of no difference or no effect. If the null hypothesis and the data notably disagree, then we will reject the null hypothesis in favor of the alternative hypothesis.
+
+> What would it mean if the null hypothesis, which says the variables `gender` and `decision` are unrelated, is true?
+
+
+> It would mean each banker would decide whether to promote the candidate without regard to the gender indicated on the file. That is, the difference in the promotion percentages would be due to the way the files were randomly divided to the bankers, and the randomization just happened to give rise to a relatively large difference of 29.2%.
+
+> Consider the alternative hypothesis: bankers were influenced by which gender was listed on the personnel file.
+
+> If this was true, and especially if this influence was substan- tial, we would expect to see some difference in the promotion rates of male and female candidates. If this gender bias was against females, we would expect a smaller fraction of promotion recommendations for female personnel files relative to the male files.
+
+**Goal:** To make *decision* and assess the quality of that *decision*, i.e., do we think discrimination is occuring in this context?
+
+We can test this with a *statistical test*. Below is an example for Chi-Square, Fisher exact test and likelihood ratio test.
+
+```{r}
+tab<-table(NC_bank)
+mosaicplot(tab)
+tab
+chisq.test(tab)
+fisher.test(tab)
+MASS::loglm( ~ 1 + 2, data = tab) 
+```
+
+## More Examples: Iris Dataset
+
+"This famous (Fisher's or Anderson's) iris data set gives the measurements in centimeters of the variables sepal length and width and petal length and width, respectively, for 50 flowers from each of 3 species of iris. The species are Iris setosa, versicolor, and virginica." `help(iris)`
+
+```{r}
+## Load dataset in base R
+data(iris) 
+## Print out the first 6 rows
+head(iris)
+```
+
+
+Print out the summary statistics (min,quartiles,mean):
+```{r}
+summary(iris)
+```
+
+Calculate the mean by group
+
+```{r}
+### Base R
+aggregate(Sepal.Length ~ Species, iris, mean) 
+```
+
+```{r}
+### Tidyverse
+iris%>%group_by(Species)%>%summarise(mean(Sepal.Length))
+```
+
+```{r}
+cor(iris[ , 1:4])     # Return correlation matrix
+```
+
+```{r}
+summary(lm(Sepal.Length ~ ., iris)) 
+```
+
+```{r}
+quantile(iris$Sepal.Length, c(0.25, 0.5, 0.75))
+```
+
+```{r}
+IQR(iris$Sepal.Length)
+```
+
+```{r}
+## Correlation test
+cor.test(iris$Sepal.Length, iris$Sepal.Width, method = "pearson")
+
+## t-test
+t.test(iris$Sepal.Length, iris$Sepal.Width)
+
+## chisq-test
+chisq.test(iris$Sepal.Length, iris$Sepal.Width)
+
+```
+
+```{r}
+summary(lm(Sepal.Length ~ Species, data = iris))
+```
+
+```{r}
+model <- lm(Sepal.Length ~ Species, data = iris)
+anova(model)
+```
