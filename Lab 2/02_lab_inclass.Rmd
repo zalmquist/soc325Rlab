@@ -20,7 +20,7 @@ There are several ways we can run code:
   - In R Markdown documents, click within a code chunk and click the green arrow to run the chunk. The button beside that runs all prior chunks. 
   
 ```{r,include=FALSE}
-if (!require("pacman")) install.packages("pacman")
+if (!require("pacman")) install.packages("pacman", repos = "http://cran.us.r-project.org")
 # p_load function loads packages if installed, or install then loads otherwise
 pacman::p_load(tidyverse,haven,lubridate,ggthemes,kableExtra,here,infer,nycflights13,epiDisplay)
 ```
