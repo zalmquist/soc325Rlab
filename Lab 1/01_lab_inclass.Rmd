@@ -10,9 +10,10 @@ output:
 subtitle: 'SOC 325: Quantified-Self'
 ---
 
-```{r, include=FALSE}
-library(tidyverse)
-#install.packages("coronavirus")
+```{r,include=FALSE}
+if (!require("pacman")) install.packages("pacman")
+# p_load function loads packages if installed, or install then loads otherwise
+pacman::p_load(tidyverse,coronavirus,haven)
 ```
 
 # 1: Getting started: Editing and running code

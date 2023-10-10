@@ -8,6 +8,12 @@ output:
     toc: true
 ---
 
+```{r,include=FALSE}
+if (!require("pacman")) install.packages("pacman")
+# p_load function loads packages if installed, or install then loads otherwise
+pacman::p_load(tidyverse,coronavirus,haven)
+```
+
 Write all code in the chunks provided. Complete this `.Rmd` file and knit it into an `.html`. You must upload both files for credit. 
 
 Remember to unzip to a real directory before running everything!
