@@ -30,7 +30,7 @@ All of the R and RMarkdown files of the lab files for this class are in [github]
 ```{r,message=FALSE,warning=FALSE}
 ## Run this code, to manage packages and install as needed.
 # Install pacman
-if (!require("pacman")) install.packages("pacman")
+if (!require("pacman")) install.packages("pacman", repos = "http://cran.us.r-project.org")
 # p_load function loads packages if installed, or install then loads otherwise
 pacman::p_load(jsonlite, ggmap,ggplot2, lubridate, zoo,here,tidyverse,kableExtra,ggmap)
 ```
