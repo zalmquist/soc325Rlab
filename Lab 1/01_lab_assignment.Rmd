@@ -158,7 +158,7 @@ If you're using the airbnb set, explain how it connects to your interests.
 
 ## 4.1: Get the data
 
-Go to [Inside Airbnb](http://insideairbnb.com/get-the-data.html) and download the "Detailed Listings" data for Seattle, `listings.csv.gz`. This file has many more variables than the "Summary" file we've been using in class. Put it in a `data/` subfolder in your `hw-02` project folder. 
+Go to [Inside Airbnb](http://insideairbnb.com/get-the-data.html) and download the "Detailed Listings" data for Seattle, `listings.csv.gz`. This file has many more variables than the "Summary" file we've been using in class. Put it in a `data/` subfolder in your `Lab 1` project folder. 
 
 [This is a compressed (gzipped) file, but R should be able to handle it as-is. If you run into trouble, try unzipping the file before reading it into R.]
 
