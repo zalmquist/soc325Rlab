@@ -48,7 +48,7 @@ The second line `pacman::p_load([PACKAGES HERE])` uses `pacman` to load and inst
 ```{r,message=FALSE,warning=FALSE}
 ## Run this code, to manage packages and install as needed.
 # Install pacman
-if (!require("pacman")) install.packages("pacman")
+if (!require("pacman")) install.packages("pacman", repos = "http://cran.us.r-project.org")
 # p_load function loads packages if installed, or install then loads otherwise
 pacman::p_load(tidyverse,googlesheets4,haven,lubridate,ggthemes,AMR,kableExtra,here)
 ```
