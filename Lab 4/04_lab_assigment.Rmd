@@ -383,18 +383,6 @@ Link the `daily_sleep_log` with your demography and chrono type linked data. *hi
 <span style="color: red;">END OF YOUR SOLUTION HERE</span>
 
 
-## Question 2.2
-
-Compare the Sleep time of Seattle Metro from the ATUS to our Class Average. Does it look like our class is sleeping a similar amount of time?
-
-<span style="color: red;">YOUR SOLUTION HERE</span>
-
-```{r}
-## Your code here
-```
-
-<span style="color: red;">END OF YOUR SOLUTION HERE</span>
-
 
 ## Question 2.3
 
