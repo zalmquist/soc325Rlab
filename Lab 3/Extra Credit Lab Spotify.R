@@ -17,9 +17,12 @@ library(knitr)
 ##############
 ## My API Key Above this
 ##############
-Sys.setenv(SPOTIFY_CLIENT_ID = 'YOURKEY')
-Sys.setenv(SPOTIFY_CLIENT_SECRET = 'YOURKEY')
-access_token <- get_spotify_access_token()
+Sys.setenv(SPOTIFY_CLIENT_ID = '')
+Sys.setenv(SPOTIFY_CLIENT_SECRET = '')
+#access_token <- get_spotify_access_token()
+#access_token <- get_spotify_authorization_code(scope = scopes()[c(7,8,9,10,14,15)])
+access_token <- get_spotify_authorization_code(scope = "user-read-recently-played")
+
 
 
 
