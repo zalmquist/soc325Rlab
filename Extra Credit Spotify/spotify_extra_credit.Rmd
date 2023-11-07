@@ -1,0 +1,161 @@
+---
+title: 'Lab 3 Extra Credit: Spotify'
+author: '[PUT YOUR NAME HERE]'
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: yes
+  pdf_document:
+    toc: yes
+subtitle: 'SOC 325: Quantified-Self'
+---
+
+## Preamble before starting the labs
+
+All of the R and RMarkdown files of the lab files for this class are in [github](https://github.com/zalmquist/soc325Rlab). However, PythonHub will have them all pre-installed.
+
+
+# Getting started: Editing and running code
+
+There are several ways we can run code:
+
+  - Highlight lines in the editor window and click **Run** at the top or hit `Ctrl` + `Enter` or `CMD` + `Enter` (Mac) to run them all.
+  - With your caret on a line you want to run, hit `Ctrl` + `Enter` or `CMD` + `Enter` (Mac). Note your caret moves to the next line, so you can run code sequentially with repeated presses. 
+  - Type individual lines in the console and press enter. 
+  - In R Markdown documents, click within a code chunk and click the green arrow to run the chunk. The button beside that runs all prior chunks. 
+
+
+
+# Spotify!
+
+This does not work on JupyterHub unfortunately. You have to do this on R and Rstudio on your home computer. I will review it in class, but the lab exercise is extra credit! It is a bit of work to get up and running, but it can be fun to play with your spotify data.
+
+# Load Libraries Needed For this Lab
+
+```{r,message=FALSE,warning=FALSE}
+## Run this code, to manage packages and install as needed.
+# Install pacman
+if (!require("pacman")) install.packages("pacman", repos = "http://cran.us.r-project.org")
+# p_load function loads packages if installed, or install then loads otherwise
+pacman::p_load(jsonlite, ggmap,ggplot2, lubridate, zoo,here,tidyverse,kableExtra,ggmap,spotifyr,ggjoy)
+```
+
+
+## Spotify API Access
+
+* See this tutorial for how to acces the API - [spotify R API](https://www.rcharlie.com/spotifyr/).
+  + Go to [https://developer.spotify.com/dashboard/](https://developer.spotify.com/dashboard/)
+  + Log In and accept terms and conditions
+  + Create a new app and follow directions on [spotify R API](https://www.rcharlie.com/spotifyr/)
+
+**Based on Solution by Angela Statler -- Big Shout out!!**
+
+```{r,eval=FALSE}
+
+myclientid<-'YOURCLIENTID'
+myclientsecret<-'YOURCLIENTSECRET'
+
+
+
+Sys.setenv(SPOTIFY_CLIENT_ID=myclientid)
+Sys.setenv(SPOTIFY_CLIENT_SECRET=myclientsecret)
+
+access_token <- get_spotify_authorization_code(scope = c('user-top-read',
+                                                         'user-read-recently-played',
+                                                         'user-read-private',
+                                                         'user-library-read',
+                                                        'user-read-email',
+                                                        'user-read-playback-state', 
+                                                        'user-modify-playback-state'))
+
+```
+
+```{r,eval=FALSE}
+########
+## If you run the above code and this code
+## You wont save your id in Markdown
+########
+grp<-get_my_recently_played(limit = 5,
+                    authorization = get_spotify_authorization_code(scope = c('user-read-recently-played'))) 
+
+gta_st <- get_my_top_artists_or_tracks(
+  type = "artists",
+  limit = 5,
+  time_range = "short_term",
+  authorization = get_spotify_authorization_code(scope = c('user-top-read')))
+
+gta_lt <- get_my_top_artists_or_tracks(
+  type = "artists",
+  limit = 5,
+  time_range = "long_term",
+   authorization = get_spotify_authorization_code(scope = c('user-top-read')))
+
+gta_st_tracks <- get_my_top_artists_or_tracks(
+  type = "tracks",
+  limit = 5,
+  time_range = "short_term",
+   authorization = get_spotify_authorization_code(scope = c('user-top-read')))
+                                              
+ gta_lt_tracks <- get_my_top_artists_or_tracks(
+   type = "tracks",
+   limit = 5,
+   time_range = "long_term",
+      authorization = get_spotify_authorization_code(scope = c('user-top-read')))                                            
+ed <- spotifyr::get_artist_audio_features('ed sheeran')
+
+save(grp,gta_st,gta_lt,gta_st_tracks,gta_lt_tracks,ed,file="data/spotify.Rda")
+
+```
+
+```{r}
+################
+## Code Examples
+################
+## Load example data
+load(here("data","spotify.Rda"))
+
+
+grp%>% 
+  mutate(artist.name = map_chr(track.artists, function(x) x$name[1]),
+         played_at = as_datetime(played_at)) %>% 
+  select(track.name, artist.name, track.album.name, played_at) %>% 
+  kable()
+
+grp %>% 
+  mutate(artist.name = map_chr(track.artists, function(x) x$name[1]),
+         played_at = as_datetime(played_at)) %>% 
+  select(track.name, artist.name, track.album.name, played_at) %>% 
+  kable()
+
+gta_st %>% 
+  mutate(artist.name = name,genre=map_chr(genres, function(x) x[1])) %>% 
+  select(artist.name,genre) %>% 
+  kable()
+
+gta_lt%>% 
+  select(name, genres) %>% 
+  rowwise %>% 
+  mutate(genres = paste(genres, collapse = ', ')) %>% 
+  ungroup %>% 
+  kable()
+
+
+gta_st_tracks %>% 
+  mutate(artist.name = map_chr(artists, function(x) x$name[1])) %>% 
+  select(name, artist.name, album.name) %>% 
+  kable()
+
+ed %>%arrange(-valence) %>% 
+  select(track_name, valence) %>% 
+  distinct() %>%
+  head(5) %>% 
+  kable()
+
+ggplot(ed, aes(x = valence, y = album_name)) + 
+  geom_joy() + 
+  theme_joy() +
+  ggtitle("Joyplot of Ed's joy distributions", 
+          subtitle = "Based on valence pulled from Spotify's Web API with spotifyr")
+```
+
+
