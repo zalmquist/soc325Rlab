@@ -213,7 +213,7 @@ In this section we are going to get experience pulling from [Kaggle](https://www
 
 We will use the `read_xlsx([URL TO SHEET HERE])` to get the sheet information. Run this code for the first time directly in the *Console* to work through the sign in process. 
 
-```{r,cache=TRUE,warning=TRUE,message=FALSE,eval=FALSEw}
+```{r,cache=TRUE,warning=TRUE,message=FALSE,eval=FALSE}
 weight<-read_xlsx("data/Daily2012-2022-calexpensed-weight.xlsb.xlsx")
 google_fit<-[YOURCODEHERE]("data/Daily2012-2022-google fit data.xlsb.xlsx")
 ```
