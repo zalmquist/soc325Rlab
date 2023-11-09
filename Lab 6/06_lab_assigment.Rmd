@@ -285,7 +285,7 @@ google_fit_my<-google_fit_my%>%group_by(month_year)%>%
 
 <span style="color: red;">END YOUR SOLUTION HERE</span>
 
-Step 2, let's plot `heart_rate` by `walking_duriation` with best fit line (linear model)
+Step 2, let's plot `heart_rate` by `walking_duration` with best fit line (linear model)
 
 <span style="color: red;">YOUR SOLUTION HERE</span>
 
