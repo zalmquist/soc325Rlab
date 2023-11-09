@@ -211,7 +211,7 @@ In this section we are going to get experience pulling from [Kaggle](https://www
 
 * `cache=TRUE` is turned on so you don't have to download the data again and again.
 
-We will use the `read_xlsx([URL TO SHEET HERE])` to get the sheet information. Run this code for the first time directly in the *Console* to work through the sign in process. 
+We will use the `read_xlsx([URL TO SHEET HERE])` to get the sheet information. 
 
 ```{r,cache=TRUE,warning=TRUE,message=FALSE,eval=FALSE}
 weight<-read_xlsx("data/Daily2012-2022-calexpensed-weight.xlsb.xlsx")
