@@ -1,0 +1,320 @@
+---
+title: "SOC 325 Lab 6 - Review"
+subtitle: "Soc 325: Quantified-Self"
+author: "[PUT YOUR NAME HERE]"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    toc: true
+---
+
+# Preamble before starting the labs
+
+You'll download all R and RMarkdown files of the lab files for this class as `.zip` files from [Google Drive ](). We will use library `googlesheets4` to access data for this lab. This will allow us to limit the data access to just UW or just this class as needed.
+
+# Pyschology of R, RStudio and Labs
+
+Scripting is HARD. That is ok, many hard things are useful! This is very helpful if you want to work as a data scientist. You need to familiarize yourself with the practices of coding and building analysis scripts.
+
+**Why**
+
+* Your work has to be reproducible 
+* Your work has to be able to hand off to someone else
+* You need to be able to do lots of different things
+
+**You Don't need to do everything from scratch!!**
+
+* It is ok to borrow code, use [stack overflow](https://stackoverflow.com/), [google](https://google.com), etc.
+* Use books like [R for Data Science](https://r4ds.had.co.nz/introduction.html).
+
+**Strategies for working in RMarkdown**
+
+* DO **NOT** code a bunch and then *knit* -- This will almost assuradely not work and crash!
+* Do make small changes and *knit*
+  + If you have a part that takes a long time (e.g. reading in data) turn `cache=TRUE` on in the R Chunk. This will pre-load it and make it faster.
+
+
+# Load Libraries Needed For this Lab
+
+For library management we use use the library `pacman`. The key with pacman is it will install and load the packages if needed. This makes our life easier!
+
+The first line of code is `if (!require("pacman")) install.packages("pacman")` to install pacman if needed.
+
+The second line `pacman::p_load([PACKAGES HERE])` uses `pacman` to load and install all the packages for the lab.
+
+
+```{r,message=FALSE,warning=FALSE}
+## Run this code, to manage packages and install as needed.
+# Install pacman
+if (!require("pacman")) install.packages("pacman", repos = "http://cran.us.r-project.org")
+# p_load function loads packages if installed, or install then loads otherwise
+pacman::p_load(tidyverse,haven,lubridate,ggthemes,kableExtra,here,readxl)
+```
+
+## Review the R Coded Needed for this lab
+
+The first part of this lab is to review and introduce all the key R and tidyverse functions we need for the lab.
+
+## Instructions
+
+* In the R code chunk command, `eval=FALSE`. Fix the R code and then switch to `eval=TRUE`
+* Pieces of the correct R code have been Removed and replaced with `[YOURCODEHERE]`
+* Replace `[YOURCODEHERE]` with the correc code `max(c(1,3,3))`
+
+
+## Data Import
+
+Below we are going to consider some data FROM NOAA
+
+* [NOAA](https://www.ncei.noaa.gov/cdo-web/)
+
+and from the US Census ACS data (`census.csv` in the data folder)
+
+```{r,cache=TRUE,warning=TRUE,message=FALSE,eval=FALSE}
+storm<-read_csv("[YOURCODEHERE]/StormEvents_details-ftp_v1.0_d2023_c20231017.csv")
+census<-read_csv("[YOURCODEHERE")
+```
+
+## Data Cleaning and munging
+
+First thing after we load the data is we need to clean it!
+
+* use `rename` to change `GEOID` in `census` to `STATE_FIPS`
+
+To do this we will use the tidyverse format:
+
+Object %>% verb
+
+In this case
+
+`census<-census%>%rename([YOUR CODE HERE])`
+
+<span style="color: red;">YOUR SOLUTION HERE</span>
+```{r,eval=FALSE}
+census<-census%>%rename(STATE_FIPS=[YOURCODEHERE])
+```
+<span style="color: red;">END YOUR SOLUTION HERE</span>
+
+Next, make `storm` variable `STATE_FIPS` character and "pad" single digit numbers with left "0"
+
+`storm<-storm%>%mutate([YOURCODE HERE])`
+
+<span style="color: red;">YOUR SOLUTION HERE</span>
+```{r,eval=FALSE}
+storm<-storm%>%mutate(
+  [YOURCODEHERE] = ifelse(nchar(STATE_FIPS)==1,paste("0",STATE_FIPS,sep=""),as.character(STATE_FIPS))
+)
+```
+<span style="color: red;">END YOUR SOLUTION HERE</span>
+
+
+Next, use `left_join` to combine `storm` data with `census` data by `STATE_FIPS`
+
+In this case
+
+`storm_census<-left_join([YOUR CODE HERE])`
+
+<span style="color: red;">YOUR SOLUTION HERE</span>
+```{r,eval=FALSE}
+storm_census<-left_join(storm,[YOURCODEHERE],by=[YOURCODEHERE])
+```
+<span style="color: red;">END YOUR SOLUTION HERE</span>
+
+
+Next, let's filter to cases's where `DAMAGE_PROPERTY` occured
+
+In this case
+
+`storm_census<-storm_census%>%filter(!is.na([YOURCODE]))`
+
+<span style="color: red;">YOUR SOLUTION HERE</span>
+```{r,eval=FALSE}
+storm_census<-storm_census%>%filter(!is.na([YOURCODEHERE]))
+```
+<span style="color: red;">END YOUR SOLUTION HERE</span>
+
+
+Next, add a new variable `DAMAGE_PROPERTY_NUM` which is a numeric verision of `DAMAGE_PROPERTY`
+
+In this case
+
+`storm_census<-storm_census%>%mutate([YOURCODEHERE])`
+
+<span style="color: red;">YOUR SOLUTION HERE</span>
+```{r,eval=FALSE}
+storm_census<-storm_census%>%mutate(DAMAGE_PROPERTY_NUM=parse_number([YOURCODEHERE]))
+```
+<span style="color: red;">END YOUR SOLUTION HERE</span>
+
+## Plot Data
+
+
+Now, lets look at `STATE` versus `DAMAGE_PROPERTY_NUM`
+
+<span style="color: red;">YOUR SOLUTION HERE</span>
+```{r,eval=FALSE}
+storm_census%>%filter(variable=="total_pop")%>%ggplot(aes(x=[YOURCODEHERE],y=DAMAGE_PROPERTY_NUM))+
+  geom_point(color = "red", size = 3) +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+```
+<span style="color: red;">END YOUR SOLUTION HERE</span>
+
+
+Now, lets look at `total_pop` versus `DAMAGE_PROPERTY_NUM` and plot a best fit line. I recommend plotting this as a log-log plot
+
+```{r,eval=FALSE}
+tmp<-storm_census%>%filter(variable==[YOURCODEHERE])%>%group_by(STATE,estimate)%>%summarise(DAMAGE_PROPERTY_NUM_max = max(DAMAGE_PROPERTY_NUM,na.rm=TRUE))
+
+tmp%>%ggplot(aes(x=estimate,y=[YOURCODEHERE]))+
+  geom_point(color = "red", size = 3) + 
+  scale_x_continuous(trans='log') +
+  scale_y_continuous(trans='log')+
+  geom_smooth(method="lm")
+```
+
+What does this graph tell you?
+
+<span style="color: red;">YOUR SOLUTION HERE</span>
+
+<span style="color: red;">END YOUR SOLUTION HERE</span>
+
+Now, lets look at `Below 100 percent of the poverty level` versus `DAMAGE_PROPERTY_NUM` and plot a best fit line. I recommend plotting this as a log-log plot
+
+<span style="color: red;">YOUR SOLUTION HERE</span>
+
+```{r,eval=FALSE}
+tmp<-storm_census%>%filter(variable==[YOURCODEHERE])%>%group_by(STATE,estimate)%>%
+  summarise(DAMAGE_PROPERTY_NUM_max = max(DAMAGE_PROPERTY_NUM,na.rm=TRUE))
+
+tmp%>%ggplot(aes(x=[YOURCODEHERE],y=DAMAGE_PROPERTY_NUM_max))+
+  geom_point(color = "red", size = 3) + 
+  scale_x_continuous(trans='log') +
+  scale_y_continuous(trans='log')+
+  geom_smooth(method="lm")
+```
+
+<span style="color: red;">END YOUR SOLUTION HERE</span>
+
+What does this graph tell you?
+
+<span style="color: red;">YOUR SOLUTION HERE</span>
+
+<span style="color: red;">END YOUR SOLUTION HERE</span>
+
+## Quantified Self Data
+
+### Import Google Fit data
+
+In this section we are going to get experience pulling from [Kaggle](https://www.kaggle.com/datasets/maximedlegrange/daily-10y-energy-expenditurekcal-and-weight-kg/). To do this we will use the `readxl`` package load the data from Google sheets.
+
+**The aim of this data** : can you correlate the weight with daily energy expenditure, activities, heart rate, blood pressure or any interesting metrics
+
+* `cache=TRUE` is turned on so you don't have to download the data again and again.
+
+We will use the `read_xlsx([URL TO SHEET HERE])` to get the sheet information. Run this code for the first time directly in the *Console* to work through the sign in process. 
+
+```{r,cache=TRUE,warning=TRUE,message=FALSE,eval=FALSEw}
+weight<-read_xlsx("data/Daily2012-2022-calexpensed-weight.xlsb.xlsx")
+google_fit<-[YOURCODEHERE]("data/Daily2012-2022-google fit data.xlsb.xlsx")
+```
+
+
+## Question 1
+
+First we want to look `Calories spent (Kcal)` versus `Weight (kg)` monthly.
+
+Step 1, let's aggregate by month
+
+<span style="color: red;">YOUR SOLUTION HERE</span>
+
+```{r,eval=FALSE}
+google_fit_my<-google_fit%>%mutate(month_year=format(as.Date(Date),"%Y-%m"))%>%
+  select(month_year,[YOURCODEHERE],[YOURCODEHERE])
+
+google_fit_my<-google_fit_my%>%group_by(month_year)%>%
+  summarise(calories=mean([YOURCODEHERE]),
+            weight=mean([YOURCODEHERE]))
+
+[YOURCODEHERE]
+
+```
+
+<span style="color: red;">END YOUR SOLUTION HERE</span>
+
+
+Step 2, let's plot `calories` by `weight` with best fit line (linear model)
+
+<span style="color: red;">YOUR SOLUTION HERE</span>
+
+```{r,eval=FALSE}
+google_fit_my%>%ggplot(aes(x=[YOURCODEHERE],y=[YOURCODEHERE]))+
+  geom_point()+
+  geom_smooth(method="lm")
+```
+
+<span style="color: red;">END YOUR SOLUTION HERE</span>
+
+What does this graph tell you?
+
+<span style="color: red;">YOUR SOLUTION HERE</span>
+
+<span style="color: red;">END YOUR SOLUTION HERE</span>
+
+## Question 2
+
+Next, we want to look at `Average heart rate (bpm)` compared to walking time (`walking duration (ms)`) on a monthly basis
+
+* Remove all months where there is not `Average heart rate (bpm)` and `walking duration (ms)` data.
+
+
+<span style="color: red;">YOUR SOLUTION HERE</span>
+
+```{r,eval=FALSE}
+google_fit_my<-google_fit%>%
+  mutate(month_year=format(as.Date(Date), "%Y-%m"))%>%
+  select(month_year,[YOURCODEHERE],
+         [YOURCODEHERE])
+
+google_fit_my<-google_fit_my%>%group_by(month_year)%>%
+  summarise(heart_rate=mean([YOURCODEHERE],na.rm=TRUE),
+            walking_duriation=mean([YOURCODEHERE],na.rm=TRUE))%>%
+  na.omit()
+
+[YOURCODEHERE]
+```
+
+<span style="color: red;">END YOUR SOLUTION HERE</span>
+
+Step 2, let's plot `heart_rate` by `walking_duriation` with best fit line (linear model)
+
+<span style="color: red;">YOUR SOLUTION HERE</span>
+
+```{r,eval=FALSE}
+google_fit_my%>%ggplot(aes(x=[YOURCODEHERE],y=[YOURCODEHERE]))+
+  geom_point()+
+  geom_smooth(method="lm")
+```
+
+<span style="color: red;">END YOUR SOLUTION HERE</span>
+
+
+What does this graph tell you?
+
+<span style="color: red;">YOUR SOLUTION HERE</span>
+
+<span style="color: red;">END YOUR SOLUTION HERE</span>
+
+## Question 3
+
+Recreate the same style of analysis but for two other variables of your choice. 
+
+* Pick two variables
+* Average over time
+* Deal with nas
+* Print out results
+* Plot results with a best fit line
+* Interpret plot
+
+<span style="color: red;">YOUR SOLUTION HERE</span>
+
+<span style="color: red;">END YOUR SOLUTION HERE</span>

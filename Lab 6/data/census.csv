@@ -1,0 +1,154 @@
+GEOID,NAME,variable,estimate,moe
+01,Alabama,total_pop,3338590,3980
+01,Alabama,Below 100 percent of the poverty level,769819,12595
+01,Alabama,medincome,54943,377
+02,Alaska,total_pop,458520,1719
+02,Alaska,Below 100 percent of the poverty level,75016,2458
+02,Alaska,medincome,80287,1113
+04,Arizona,total_pop,4985729,10875
+04,Arizona,Below 100 percent of the poverty level,934911,13056
+04,Arizona,medincome,65913,387
+05,Arkansas,total_pop,2227020,4549
+05,Arkansas,Below 100 percent of the poverty level,468113,8062
+05,Arkansas,medincome,52123,458
+06,California,total_pop,20553732,35545
+06,California,Below 100 percent of the poverty level,4741175,41071
+06,California,medincome,84097,236
+08,Colorado,total_pop,4507448,9599
+08,Colorado,Below 100 percent of the poverty level,535976,9772
+08,Colorado,medincome,80184,450
+09,Connecticut,total_pop,2595884,6140
+09,Connecticut,Below 100 percent of the poverty level,351476,8215
+09,Connecticut,medincome,83572,568
+10,Delaware,total_pop,645409,2690
+10,Delaware,Below 100 percent of the poverty level,109274,4414
+10,Delaware,medincome,72724,1127
+11,District of Columbia,total_pop,276373,1660
+11,District of Columbia,Below 100 percent of the poverty level,100618,4492
+11,District of Columbia,medincome,93547,1718
+12,Florida,total_pop,14449017,20614
+12,Florida,Below 100 percent of the poverty level,2744612,27816
+12,Florida,medincome,61777,263
+13,Georgia,total_pop,5934931,9904
+13,Georgia,Below 100 percent of the poverty level,1441351,20400
+13,Georgia,medincome,65030,355
+15,Hawaii,total_pop,344295,2124
+15,Hawaii,Below 100 percent of the poverty level,133740,4359
+15,Hawaii,medincome,88005,761
+16,Idaho,total_pop,1567799,4232
+16,Idaho,Below 100 percent of the poverty level,202560,5355
+16,Idaho,medincome,63377,614
+17,Illinois,total_pop,8699413,11026
+17,Illinois,Below 100 percent of the poverty level,1483378,20330
+17,Illinois,medincome,72563,319
+18,Indiana,total_pop,5483296,5023
+18,Indiana,Below 100 percent of the poverty level,819005,12122
+18,Indiana,medincome,61944,284
+19,Iowa,total_pop,2795319,3626
+19,Iowa,Below 100 percent of the poverty level,339695,7138
+19,Iowa,medincome,65429,397
+20,Kansas,total_pop,2386766,4445
+20,Kansas,Below 100 percent of the poverty level,327209,6452
+20,Kansas,medincome,64521,344
+21,Kentucky,total_pop,3842383,3468
+21,Kentucky,Below 100 percent of the poverty level,709140,11216
+21,Kentucky,medincome,55454,389
+22,Louisiana,total_pop,2805875,4405
+22,Louisiana,Below 100 percent of the poverty level,850486,13168
+22,Louisiana,medincome,53571,378
+23,Maine,total_pop,1261097,1914
+23,Maine,Below 100 percent of the poverty level,145992,3770
+23,Maine,medincome,63182,651
+24,Maryland,total_pop,3238671,6376
+24,Maryland,Below 100 percent of the poverty level,550074,10546
+24,Maryland,medincome,91431,570
+25,Massachusetts,total_pop,5211704,8679
+25,Massachusetts,Below 100 percent of the poverty level,668780,11582
+25,Massachusetts,medincome,89026,495
+26,Michigan,total_pop,7715291,6195
+26,Michigan,Below 100 percent of the poverty level,1310058,13726
+26,Michigan,medincome,63202,242
+27,Minnesota,total_pop,4576758,3905
+27,Minnesota,Below 100 percent of the poverty level,512312,8170
+27,Minnesota,medincome,77706,350
+28,Mississippi,total_pop,1701989,2486
+28,Mississippi,Below 100 percent of the poverty level,557111,8218
+28,Mississippi,medincome,49111,447
+29,Missouri,total_pop,4930466,4931
+29,Missouri,Below 100 percent of the poverty level,762023,10691
+29,Missouri,medincome,61043,316
+30,Montana,total_pop,938223,1741
+30,Montana,Below 100 percent of the poverty level,131512,3973
+30,Montana,medincome,60560,730
+31,Nebraska,total_pop,1630376,3382
+31,Nebraska,Below 100 percent of the poverty level,195455,4845
+31,Nebraska,medincome,66644,429
+32,Nevada,total_pop,1799601,7428
+32,Nevada,Below 100 percent of the poverty level,388814,8857
+32,Nevada,medincome,65686,488
+33,New Hampshire,total_pop,1249067,2183
+33,New Hampshire,Below 100 percent of the poverty level,98429,3847
+33,New Hampshire,medincome,83449,773
+34,New Jersey,total_pop,5787873,11074
+34,New Jersey,Below 100 percent of the poverty level,883896,12412
+34,New Jersey,medincome,89703,507
+35,New Mexico,total_pop,1364638,8553
+35,New Mexico,Below 100 percent of the poverty level,378896,8918
+35,New Mexico,medincome,54020,484
+36,New York,total_pop,12215118,15025
+36,New York,Below 100 percent of the poverty level,2636823,26596
+36,New York,medincome,75157,322
+37,North Carolina,total_pop,6865508,8866
+37,North Carolina,Below 100 percent of the poverty level,1379672,18811
+37,North Carolina,medincome,60516,353
+38,North Dakota,total_pop,656584,1366
+38,North Dakota,Below 100 percent of the poverty level,80390,2973
+38,North Dakota,medincome,68131,1030
+39,Ohio,total_pop,9374538,4889
+39,Ohio,Below 100 percent of the poverty level,1528963,19095
+39,Ohio,medincome,61938,252
+40,Oklahoma,total_pop,2752553,4429
+40,Oklahoma,Below 100 percent of the poverty level,583853,7575
+40,Oklahoma,medincome,56956,382
+41,Oregon,total_pop,3394838,6460
+41,Oregon,Below 100 percent of the poverty level,498517,9490
+41,Oregon,medincome,70084,505
+42,Pennsylvania,total_pop,10153752,8231
+42,Pennsylvania,Below 100 percent of the poverty level,1482811,18030
+42,Pennsylvania,medincome,67587,271
+44,Rhode Island,total_pop,841181,3750
+44,Rhode Island,Below 100 percent of the poverty level,118257,4580
+44,Rhode Island,medincome,74489,1058
+45,South Carolina,total_pop,3334961,4521
+45,South Carolina,Below 100 percent of the poverty level,718345,11315
+45,South Carolina,medincome,58234,482
+46,South Dakota,total_pop,728526,1314
+46,South Dakota,Below 100 percent of the poverty level,106291,3195
+46,South Dakota,medincome,63920,695
+47,Tennessee,total_pop,5198206,5221
+47,Tennessee,Below 100 percent of the poverty level,955929,14385
+47,Tennessee,medincome,58516,363
+48,Texas,total_pop,18566027,26849
+48,Texas,Below 100 percent of the poverty level,3965117,39408
+48,Texas,medincome,67321,214
+49,Utah,total_pop,2704561,4858
+49,Utah,Below 100 percent of the poverty level,278486,7199
+49,Utah,medincome,79133,556
+50,Vermont,total_pop,596282,654
+50,Vermont,Below 100 percent of the poverty level,64962,2107
+50,Vermont,medincome,67674,896
+51,Virginia,total_pop,5574307,6853
+51,Virginia,Below 100 percent of the poverty level,828664,13372
+51,Virginia,medincome,80615,377
+53,Washington,total_pop,5465011,9069
+53,Washington,Below 100 percent of the poverty level,746904,11668
+53,Washington,medincome,82400,397
+54,West Virginia,total_pop,1658405,1684
+54,West Virginia,Below 100 percent of the poverty level,295632,6054
+54,West Virginia,medincome,50884,550
+55,Wisconsin,total_pop,4894019,5646
+55,Wisconsin,Below 100 percent of the poverty level,610632,9431
+55,Wisconsin,medincome,67080,329
+56,Wyoming,total_pop,511179,1619
+56,Wyoming,Below 100 percent of the poverty level,60482,2645
+56,Wyoming,medincome,68002,1091
