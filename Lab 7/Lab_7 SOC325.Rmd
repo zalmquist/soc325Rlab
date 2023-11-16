@@ -414,6 +414,141 @@ king %>%
 
 This also means you can do all the little tricks and tweaks you like with ggplot2, including setting the limits of the colour scale (which we will explore below in the [Faceted Mapping] section).
 
+## Question 0
+
+For this question you will be asked to:
+
+1. Fill in `[YOUR CODE HERE]` with the correct R code.
+2. Change `eval=FALSE` in the R chunk to `eval=TRUE`
+
+### Question 0.1
+
+Let's look at the tracts for `Deschutes` county Oregon. 
+
+<span style="color: red;">YOUR SOLUTION HERE</span>
+
+```{r,eval=FALSE}
+
+deschutes <- get_acs(state = "OR", 
+                  county = [YOUR CODE HERE], 
+                  geography = "tract", 
+                  variables = "B19013_001", 
+                  geometry = TRUE, #when you set it to TRUE you get a geometry column 
+                  year = 2020)
+```
+
+<span style="color: red;">END OF YOUR SOLUTION HERE</span>
+
+### Question 0.2
+
+Print out the first 6 rows.
+
+<span style="color: red;">YOUR SOLUTION HERE</span>
+
+```{r,eval=FALSE}
+deschutes%>%head([YOUR CODE HERE])
+```
+
+<span style="color: red;">END OF YOUR SOLUTION HERE</span>
+
+### Question 0.3
+
+<span style="color: red;">YOUR SOLUTION HERE</span>
+
+```{r,eval=FALSE}
+deschutes %>%
+  ggplot(aes(fill = [YOUR CODE HERE])) + #the fill is the variable you wish to map
+  geom_sf(color = NA) +  #develop some intuition: you should test out what happens when you don't set color=NA
+  scale_fill_viridis_c(option = "magma") 
+```
+
+<span style="color: red;">END OF YOUR SOLUTION HERE</span>
+
+### Question 0.4
+
+We want the variables for the `2020` ACS.
+
+<span style="color: red;">YOUR SOLUTION HERE</span>
+
+```{r,eval=FALSE}
+v20 <- load_variables([YOUR CODE HERE] "acs5", cache = TRUE)
+head(v20)
+# try View in the console
+```
+
+<span style="color: red;">END OF YOUR SOLUTION HERE</span>
+
+
+### Question 0.4
+
+<span style="color: red;">YOUR SOLUTION HERE</span>
+
+```{r,eval=FALSE}
+vars<-c(
+  median_age_male = "B01002_002",
+  median_age_female="B01002_003",
+  total_pop = "B01003_001",
+  medincome = "B19013_001"
+)
+
+deschutes <- get_acs(state = "OR", 
+                  county = "Deschutes", 
+                  geography = "tract", 
+                  variables = [YOUR CODE HERE], 
+                  geometry = TRUE, #when you set it to TRUE you get a geometry column 
+                  year = 2020)
+
+head(deschutes)
+```
+
+<span style="color: red;">END OF YOUR SOLUTION HERE</span>
+
+### Question 0.5
+
+Map the total population (`total_pop`)
+
+<span style="color: red;">YOUR SOLUTION HERE</span>
+
+```{r,eval=FALSE}
+deschutes%>%filter(variable==[YOUR CODE HERE]) %>%
+  ggplot(aes(fill = estimate)) + #the fill is the variable you wish to map
+  geom_sf(color = NA) +  #develop some intuition: you should test out what happens when you don't set color=NA
+  scale_fill_viridis_c(option = "magma") 
+```
+
+<span style="color: red;">END OF YOUR SOLUTION HERE</span>
+
+### Question 0.6
+
+Map the total median age by female (`median_age_female`)
+
+<span style="color: red;">YOUR SOLUTION HERE</span>
+
+```{r,eval=FALSE}
+deschutes%>%filter(variable==[YOUR CODE HERE]) %>%
+  ggplot(aes(fill = estimate)) + #the fill is the variable you wish to map
+  geom_sf(color = NA) +  #develop some intuition: you should test out what happens when you don't set color=NA
+  scale_fill_viridis_c(option = "magma") 
+```
+
+<span style="color: red;">END OF YOUR SOLUTION HERE</span>
+
+### Question 0.7
+
+Map the total median age by female (`median_age_male`)
+
+<span style="color: red;">YOUR SOLUTION HERE</span>
+
+```{r,eval=FALSE}
+deschutes%>%filter(variable==[YOUR CODE HERE]) %>%
+  ggplot(aes(fill = estimate)) + #the fill is the variable you wish to map
+  geom_sf(color = NA) +  #develop some intuition: you should test out what happens when you don't set color=NA
+  scale_fill_viridis_c(option = "magma") 
+```
+
+<span style="color: red;">END OF YOUR SOLUTION HERE</span>
+
+
 ## Question 1
 
 ### Question 1.1
