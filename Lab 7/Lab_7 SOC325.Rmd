@@ -35,13 +35,13 @@ To get started working with __tidycensus__, we  need obtain an API key from Cens
 library(tidycensus)
 library(tidyverse)
 
-if (FALSE) {
-census_api_key("c0adf5947e546e59f39dc80f1295375f69d950e7", install = TRUE)
+#if (FALSE) {
+census_api_key("c0adf5947e546e59f39dc80f1295375f69d950e7", overwrite = TRUE, install = TRUE)
 # First time, reload your environment so you can use the key without restarting R.
 readRenviron("~/.Renviron")
 # You can check it with:
 Sys.getenv("CENSUS_API_KEY")
-}
+#}
 
 ```
 
