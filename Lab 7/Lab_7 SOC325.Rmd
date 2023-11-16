@@ -1,0 +1,463 @@
+---
+title: "SOC 325 Lab 7 - Tidycensus"
+subtitle: "Soc 325: Quantified-Self"
+author: "[PUT YOUR NAME HERE]"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    toc: true
+---
+
+# Preamble before starting the labs
+
+
+
+
+## R packages
+
+```{r,message=FALSE,warning=FALSE}
+## Run this code, to manage packages and install as needed.
+# Install pacman
+if (!require("pacman")) install.packages("pacman", repos = "http://cran.us.r-project.org")
+# p_load function loads packages if installed, or install then loads otherwise
+pacman::p_load(tidyverse,tidycensus,tigris,here,kableExtra)
+
+theme_set(theme_minimal())
+options(scipen = 999)
+knitr::opts_chunk$set(error = TRUE)
+```
+
+## API Key
+
+To get started working with __tidycensus__, we  need obtain an API key from Census <http://api.census.gov/data/key_signup.html>.  
+
+```{r, eval = FALSE, echo=TRUE}
+library(tidycensus)
+library(tidyverse)
+
+if (FALSE) {
+census_api_key("c0adf5947e546e59f39dc80f1295375f69d950e7", install = TRUE)
+# First time, reload your environment so you can use the key without restarting R.
+readRenviron("~/.Renviron")
+# You can check it with:
+Sys.getenv("CENSUS_API_KEY")
+}
+
+```
+
+**Recommendation** To keep your census API key secret you can run:
+
+```
+library(tidycensus)
+census_api_key("ENTER YOUR KEY HERE")
+```
+
+In the console and everything will work in R Markdown.
+
+# Census Hiearchies 
+
+Aggregate data from the decennial US Census, American Community Survey, and other Census surveys are made available to the public at different *enumeration units*. Enumeration units are geographies at which Census data are tabulated. They include both *legal entities* such as states and counties, and *statistical entities* that are not official jurisdictions but used to standardize data tabulation. The smallest unit at which data are made available from the decennial US Census is the *block,* and the smallest unit available in the ACS is the *block group*, which represents a collection of blocks. Other surveys are generally available at higher levels of aggregation.
+
+Enumeration units represent different levels of the *Census hierarchy.* This hierarchy is summarized in the graphic below (from <https://www.census.gov/programs-surveys/geography/guidance/hierarchy.html>).
+
+```{r census-hierarchy, echo = FALSE, fig.cap = "Census hierarchy of enumeration units", fig.align='center', fig.dim=c(10,7)}
+knitr::include_graphics("https://static.socialexplorer.com/pub/help/wp-content/uploads/2013/11/geo_diagram.png")
+```
+
+The central axis of the diagram represents the central Census hierarchy of enumeration units, as each geography from Census blocks all the way up to the nation *nests* within its parent unit. This means that block groups are fully composed of Census blocks, Census tracts are fully composed of block groups, and so forth. 
+
+## Getting data with tidycensus
+
+Retrieving data from census API is possible with the following functions:
+
+-   `get_decennial()`, which requests data from the US Decennial Census APIs for 2000, 2010, and 2020.  
+
+-   `get_acs()`, which requests data from the 1-year and 5-year American Community Survey samples. Data are available from the 1-year ACS back to 2005 and the 5-year ACS back to 2005-2009.  
+
+-   `get_estimates()`, an interface to the Population Estimates APIs. These datasets include yearly estimates of population characteristics by state, county, and metropolitan area, along with components of change demographic estimates like births, deaths, and migration rates.  
+
+-   `get_flows()`, an interface to the ACS Migration Flows APIs. Includes information on in- and out-flows from various geographies for the 5-year ACS samples, enabling origin-destination analyses.  
+
+-   `get_pums()`, which accesses data from the ACS Public Use Microdata Sample APIs. These samples include anonymized individual-level records from the ACS organized by household and are highly useful for many different social science analyses. `get_pums()` will be covered in next week.  
+
+To get data from the decennial US Census, users must specify a string representing the requested geography; a vector of Census variable IDs, represented by variable; or optionally a Census table ID, passed to table. In this basic example, let's look at total population of US states in 2010: 
+
+```{r, fig.cap="Table 1: Total population by state, 2010 Census"}
+US_pop <- tidycensus::get_decennial(geography = "state", 
+                       sumfile = "sf1",
+                       variables = "P001001", 
+                       year = 2010)
+
+head(US_pop, 10) %>% kbl()
+```
+
+By default, get_decennial() uses the argument `sumfile = "sf1"` which fetches data from the decennial Census Summary File 1. This summary file exists for the 2000 and 2010 decennial US Censuses, and includes core demographic characteristics for Census geographies. There are other summary files designed for various purposes. You can check which summary file exists for which census on [CSSCR.](https://depts.washington.edu/csscr/census/)
+
+As of today, __2020 Decennial Census__ data are only available from the PL 94-171 Redistricting summary file, which is specified with `sumfile = "pl"` and include only a limited subset of  variables. These variables include total population and housing units; race and ethnicity; voting-age population; and group quarters population. You can find detailed information on [Census website.](https://www.census.gov/programs-surveys/decennial-census/about/rdo/summary-files.html) 
+
+For example, the code below retrieves total population of Washington State counties from the 2020 decennial Census:
+
+```{r, fig.cap="Table 2: Total population by county, Washington State, 2020 Census"}
+WA_pop = get_decennial(
+  geography = "county", 
+  state = "WA",
+  year = 2020, 
+  variables = "P1_001N", 
+  sumfile = "pl")
+
+head(WA_pop, 10) %>% kbl()
+```
+
+The function returns a tibble with four columns by default:  
+
+-   `GEOID`, an identifier for the geographical unit associated with the row.   
+-   `NAME`, a descriptive name of the geographical unit.  
+-   `variable`, the Census variable represented in the row.  
+-   `value`, the value of the variable for that unit.  
+
+## Searching for variables
+
+Getting variables from the Census or ACS requires knowing the variable ID - and there are thousands of these IDs across the different Census files.  Luckily, tidycensus includes `load_variables()` function. It takes two required  and one optional arguments: 
+
+-   the year of the Census or end year of the ACS sample.  
+-   dataset name, which varies in availability by year (e.g. "pl", "sf1").   
+-   (Optional) `cache = TRUE` will cache the dataset on your computer for future use.  
+ 
+To browse these variables, you can either assign the result of this function to a variable and use the `View` function in RStudio. Alternatively, you can use simple regex lookup to extract relevant variables. As an example, this code extracts race and ethnicity population totals from 2020 census.
+
+```{r, eval = TRUE}
+vars = load_variables(2020, "pl", cache = TRUE)
+#View(vars)
+
+race_vars_tbl = vars %>% 
+  filter(str_detect(name, "01N|02N")) %>% 
+  filter(str_detect(concept, "RACE")) 
+
+race_totals = race_vars_tbl$name
+names(race_totals) = str_c(race_vars_tbl$label, race_vars_tbl$concept, sep = "_")
+
+race_vars_tbl%>%kableExtra::kbl()
+```
+
+We have stored the names and labels of the variables into vector, called `totals`. Later, we will use it inside the `get_decennial()`.  
+
+
+
+##  Working with ACS data
+
+American Community Survey (ACS) data are available from the 1-year ACS since 2005 for geographies of population 65,000 and greater, and from the 5-year ACS for all geographies down to the block group level starting with the 2005-2009 dataset.  `get_acs()` defaults to the 5-year ACS with the argument `survey = "acs5"`, but 1-year ACS data are available using `survey = "acs1"`. 
+
+ACS data differ from decennial Census data as they are based on an annual sample of approximately 3 million households, rather than a more complete enumeration of the US population.  In turn, ACS data points are __estimates__ characterized by a __margin of error__.  __tidycensus__ will always return the estimate and margin of error together for any requested variables when using `get_acs()`.  In turn, when requesting ACS data with __tidycensus__, it is not necessary to specify the `"E"` or `"M"` suffix for a variable name.  Let's fetch median household income data from the 2014-2018 ACS for counties in Vermont. 
+
+```{r}
+vt <- get_acs(geography = "county", 
+              variables = c(medincome = "B19013_001"), 
+              state = "VT", 
+              year = 2018)
+
+vt
+```
+
+The output is similar to a call to `get_decennial()`, but instead of a `value` column, `get_acs` returns `estimate` and `moe` columns for the ACS estimate and margin of error, respectively.  `moe` represents the default 90 percent confidence level around the estimate; this can be changed to 95 or 99 percent with the `moe_level` parameter in `get_acs` if desired. 
+
+As we have the margin of error, we can visualize the uncertainty around the estimate: 
+
+```{r}
+vt %>%
+  mutate(NAME = gsub(" County, Vermont", "", NAME)) %>%
+  ggplot(aes(x = estimate, y = reorder(NAME, estimate))) +
+  geom_errorbarh(aes(xmin = estimate - moe, xmax = estimate + moe)) +
+  geom_point(color = "red", size = 3) +
+  labs(title = "Household income by county in Vermont",
+       subtitle = "2014-2018 American Community Survey",
+       y = "",
+       x = "ACS estimate (bars represent margin of error)") +
+  theme_bw()
+```
+
+# Case Study 1: Racial and Ethnic composition of WA counties {.unnumbered}
+
+First, let's do a quick sanity check on the various total population variables. Also, checking the relative proportions of one race and multiple race populations. Using King County as an example:
+
+```{r}
+king_race = get_decennial(
+  geography = "county", 
+  state = "WA",
+  county = "King",
+  year = 2020, 
+  variables = race_totals,
+  summary_var = "P1_001N", # total population 
+  sumfile = "pl")
+
+king_race %>% 
+  mutate(percent = round(100 * (value / summary_value)),1) %>%
+  select(variable, value, percent) %>% 
+  kbl()
+```
+
+
+As seen the table above, people who are 2 or more race consist of around 10%. We will ignore them in this tutorial for simplicity, but with some data wrangling, they can easily be lumped to a seperate category.  
+
+```{r}
+# race and ethnicity variables
+race_vars <- c(
+  Hispanic = "P2_002N",
+  White = "P2_005N",
+  Black = "P2_006N",
+  Native = "P2_007N",
+  Asian = "P2_008N",
+  NHPI = "P2_009N",
+  Other = "P2_010N"
+  )
+```
+
+Now retrieving the data for all WA counties. Here I specified a `summary_var` which creates an additional column with the desired variable. Here I would like to have a seperate column with the total population of WA state.
+
+```{r}
+WA_raw = get_decennial(
+  geography = "county", 
+  state = "WA",
+  year = 2020, 
+  variables = race_vars,
+  summary_var = "P1_001N",  # total population
+  sumfile = "pl")
+```
+
+We can use tidyverse pipeline to clean and prepare our data. The most important step below is to make sure county names match with the names in the `us_wa_counties_grid1` from geofacet package.
+
+```{r}
+WA_race =  WA_raw %>%
+  rename(total_pop = summary_value, pop=value) %>%
+  mutate(county = str_remove(NAME, " County, Washington")) %>%
+  mutate(race = as_factor(variable)) %>%
+  mutate(percent = round(100 * (pop / total_pop), 1)) %>%
+  select(county, race, pop, total_pop, percent)
+
+
+head(WA_race, 10) %>% kbl()
+
+```
+By default tidycensus creates a tidy data.frame, each row represents county-characteristic combinations. Alternatively, we can create a table of variables spread across the columns by the setting `output = "wide"`. Here is the same data in a wide form:
+
+```{r}
+WA_wide = get_decennial(
+  geography = "county", 
+  state = "WA",
+  year = 2020, 
+  variables = race_vars,
+  summary_var = "P1_001N",  # total population
+  sumfile = "pl", 
+  output = "wide")
+
+head(WA_wide, 10) %>% kbl()
+
+```
+
+I will move forward with the tidy data.frame, as it is generally easier to work with within the tidyverse. For instance, we can easily look at the top 20 counties with most non-white population: 
+
+```{r}
+WA_race %>%
+  filter(race != "White") %>%
+  group_by(county, nonWhite = race) %>% 
+  summarise(percantage = max(percent)) %>%
+  arrange(-percantage) %>% 
+  head(20) %>%
+  kbl()
+```
+
+
+```{r}
+library(geofacet)
+
+WA_race %>%
+  ggplot(aes(percent, race, fill=race)) +
+  geom_col() +
+  theme_bw() +
+  facet_geo(~ county, grid = "us_wa_counties_grid1", label = "county") +
+  labs(title = "Racial Composition of WA counties, Census 2020",
+    x = "Share of population (%)",
+    y = "Race") +
+  theme(strip.text.x = element_text(size = 6))
+```
+
+
+# Case Study 2: Population characteristics of Yakima county {.unnumbered}
+
+We will use `get_estimates()` to get data from the US Census Bureau Population Estimates API. From the product argument we will choose `"characteristics"`. It returns population estimates broken down by categories of `AGEGROUP`, `SEX`, `RACE`, and `HISP`, for Hispanic origin. Requested breakdowns should be specified as a character vector supplied to the `breakdown` parameter.
+
+Census bureau normally use integer labels for the breakdown variables. Luckily, specifying `breakdown_labels = TRUE`, the function will return the text labels instead. For example: 
+
+```{r}
+yakima_pop <- get_estimates(geography = "county", 
+                        product = "characteristics", 
+                        breakdown = c("SEX", "AGEGROUP", "HISP"),  
+                        breakdown_labels = TRUE, 
+                        state = "WA",
+                        county = "Yakima")
+
+head(yakima_pop,20) %>% kbl()
+```
+
+With some additional data wrangling, the returned format facilitates analysis and visualization.   For example, we can compare population pyramids for Hispanic and non-Hispanic populations in WA:  
+
+```{r}
+compare <- yakima_pop %>%
+  filter(str_detect(AGEGROUP, "^Age"), 
+                  HISP != "Both Hispanic Origins", 
+                  SEX != "Both sexes") %>%
+  mutate(value = ifelse(SEX == "Male", -value, value))
+
+ggplot(compare, aes(x = AGEGROUP, y = value, fill = SEX)) + 
+  geom_bar(stat = "identity", width = 1) + 
+  scale_y_continuous(labels = function(y) paste0(abs(y / 1000), "k")) + 
+  scale_x_discrete(labels = function(x) gsub("Age | years", "", x)) + 
+  scale_fill_manual(values = c("darkred", "navy")) + 
+  coord_flip() + 
+  theme_bw() +
+  facet_wrap(~HISP) + 
+  labs(x = "", 
+       y = "2019 Census Bureau population estimate", 
+       title = "Population structure by Hispanic origin", 
+       subtitle = "Yakima County, WA", 
+       fill = "", 
+       caption = "Data source: US Census Bureau population estimates")
+  
+
+
+```
+
+# Mapping the US Census Data
+
+#### MAUP Rules Everything Around Me
+##### The Modifiable Areal Unit Problem, Visualized
+  
+  The scale of geography you use determines its context; as you might intuit, looking at some variable at the state-level might yield different apparent results than if you were to look at the same variable at the county-level in that same state. By extension, if you were to make assumptions about the context and wider applicability of your findings using state-level data and results, and assume these could be used to represent county-level variability and context, you might easily misrepresent the true nature of the geographic surface of whatever variable or outcome you are considering. This abstraction probably sounds familiar; it is a geographic extension of the ecological fallacy called the modifiable areal unit problem (MAUP). MAUP is perhaps the ultimate form of geographic data caveat indagator ("researcher beware"); be extremely thoughtful in your choice of geographic level within the limitations of the data to which you have access.
+  
+![MAUP Example](https://metrans.org/assets/upload/news/Screen%20Shot%202017-02-03%20at%2016.13.21.png)
+  
+
+Another perhaps more familiar example of MAUP in action is this classic gerrymandering diagram representing an imaginary congressional district:
+
+![Gerrymandering](https://pbs.twimg.com/media/B-8ljgjU0AASq8g.jpg)
+  
+
+And so, in some sense, MAUP does to some degree "rule" everything around us. It is everywhere. It behooves us to try to avoid its worst issues.
+
+
+  
+#### A word of warning: ZIP codes vs ZCTA
+
+  While a lot of research likes to use "ZIP code" as though it is a geographic area level, a ZIP code is not a true geography. ZIP codes are used by the United States Post Office to determine the relative delivery volume load of a specific post office; this has no inherent geographic bound and is fluid. If a ZIP code is tied to a post office, it is then an example of point data (which we do not explore in this tutorial). To look at ZIP codes as if they were true geographic areas, the Census Bureau regularly publishes ZCTA (ZIP Code Tabulation Area) spatial files. In order to consider ZIP code-level data, you will need to "crosswalk" the ZIP code to its approximate ZCTA using a crosswalk file (i.e. you have to link them). While we are not going to cover this today (it is tricky), you might consider reading about it in [this article about the process](https://mcdc.missouri.edu/geography/ZIP-resources.html), and you can find crosswalk files online through [the huduser.gov website](https://www.huduser.gov/portal/datasets/usps_crosswalk.html#codebook).
+
+
+
+### Mapping using tidycensus and ggplot2
+
+Note 1: I am presuming you have both tidycensus installed, and a unique individual Census API key considering you learned about tidycensus last week, too.
+
+Note 2: We are making "choropleth" maps today; this means we are making "fill" maps, or maps that have full areas coloured in by processing area-level continuous or categorical data, instead of using data relating to points on a map (e.g. latitude/longitude of post offices, etc.). This is most appropriate for aggregate data representation in geographic space.
+
+
+
+#### Geographic Identifiers (GEOIDs): a brief overview
+
+  GEOIDs are assigned to facilitate the presentation, organization and sharing of geographic and statistical data. GEOIDs are numeric codes; for the most part, each geography has its own unique code to differentiate it from all others. The most common GEOIDs you will see relate to states, counties, congressional districts, core based statistical areas (metropolitan and micropolitan areas; CBSAs), census tracts, block groups and census blocks. Note: If the geographies nest (remember the hierarchy!) then the codes are iteratively built. 
+
+```{r, echo=FALSE}
+geoid <- read.csv(here("data","geoids_nesting_example.csv"), colClasses = c("Example.GEOID"="character"))
+
+geoid %>%
+  kbl() %>%
+  kable_minimal()
+```
+
+Another form of GEOID is FIPS codes (Federal Information Processing Series codes); often when someone refers to a FIPS code, they are referring to a specific county's code, but not always.
+
+[You can read more about FIPS codes here.](https://www.census.gov/library/reference/code-lists/ansi.html) \
+[You can read more about GEOIDs here.](https://www.census.gov/programs-surveys/geography/guidance/geo-identifiers.html)
+
+
+
+#### Getting geometry files through tidycensus
+
+  Given that census data relates to specific areas on a map, you might want to map these yourself. Fortunately, __tidycensus__ uses __tigris__ package to make this a reasonably straight-forward process. With a simple specification, __tidycensus__ is able to return simple feature (i.e. sf) geometry for geographic units in addition to variables from the Decennial US Census (the Census) or American Community Survey (the ACS). By setting `geometry = TRUE` in a __tidycensus__ function call, __tidycensus__ will use the __tigris__ package to retrieve the corresponding geographic dataset from the US Census Bureau and pre-merge it with the tabular data obtained from the Census API.
+
+The following example shows median household income from the 2016-2020 5-year ACS for Census tracts in King County, Washington: 
+
+```{r,warning=FALSE,message=FALSE}
+king <- get_acs(state = "WA", 
+                  county = "King", 
+                  geography = "tract", 
+                  variables = "B19013_001", 
+                  geometry = TRUE, #when you set it to TRUE you get a geometry column 
+                  year = 2020)
+
+head(king)
+```
+
+Our object `king` looks much like the basic __tidycensus__ output, but with a `geometry` list-column describing the geometry of each feature, using the geographic coordinate system NAD 1983 (EPSG: 4269) which is the default for Census shapefiles.  __tidycensus__ uses the Census [cartographic boundary shapefiles](https://www.census.gov/geographies/mapping-files/time-series/geo/carto-boundary-file.html) for faster processing (usually good enough for most purposes); if you prefer the TIGER/Line shapefiles, set `cb = FALSE` in the function call. A word of warning: these TIGER/Line shapefiles are sometimes huge because they have a lot of information beyond map lines. I wouldn't bother using these unless you have a specific need (e.g. you want to superimpose roads on your map, etc.) or you'll be waiting for your map to load for ages!
+
+Also, TIGER/Line shapefiles spit out something like on the left, whereas we probably want something more like on the right:
+
+![compare TIGER/Line to multipolygon](https://walker-data.com/census-r/05-census-geographic-data_files/figure-html/compare-cb-1.png)
+
+
+
+To return to our geometry focus: As the dataset is in a tidy format, it can be quickly visualized with the `geom_sf` functionality currently in the development version of __ggplot2__: 
+
+```{r,warning=FALSE,message=FALSE}
+king %>%
+  ggplot(aes(fill = estimate)) + #the fill is the variable you wish to map
+  geom_sf(color = NA) +  #develop some intuition: you should test out what happens when you don't set color=NA
+  scale_fill_viridis_c(option = "magma") #the viridis package is a great option for mapping continuous data
+```
+
+This also means you can do all the little tricks and tweaks you like with ggplot2, including setting the limits of the colour scale (which we will explore below in the [Faceted Mapping] section).
+
+## Question 1
+
+### Question 1.1
+
+Get a Census API.
+
+### Question 1.2
+
+Using `get_acs()` function (see above for example).
+
+Pick your home county (where you grew up) and select a few demographic and social characteristics.
+
+<span style="color: red;">YOUR SOLUTION HERE</span>
+
+```{r}
+## your R code here
+```
+
+<span style="color: red;">END OF YOUR SOLUTION HERE</span>
+
+### Question 1.3
+
+Pick a demographic or social characteristic not done in this tutorial and download it and plot it as a map.
+
+<span style="color: red;">YOUR SOLUTION HERE</span>
+
+```{r}
+## your R code here
+```
+
+<span style="color: red;">END OF YOUR SOLUTION HERE</span>
+
+
+### Question 1.4
+
+Build a Facet map plot for Income for WA Counties in 2020.
+
+<span style="color: red;">YOUR SOLUTION HERE</span>
+
+```{r}
+## your R code here
+```
+
+<span style="color: red;">END OF YOUR SOLUTION HERE</span>
+
+
+
