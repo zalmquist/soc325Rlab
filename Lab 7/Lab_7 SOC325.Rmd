@@ -20,7 +20,7 @@ output:
 # Install pacman
 if (!require("pacman")) install.packages("pacman", repos = "http://cran.us.r-project.org")
 # p_load function loads packages if installed, or install then loads otherwise
-pacman::p_load(tidyverse,tidycensus,tigris,here,kableExtra)
+pacman::p_load(tidyverse,tidycensus,tigris,here,kableExtra,geofacet)
 
 theme_set(theme_minimal())
 options(scipen = 999)
